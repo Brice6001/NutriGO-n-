@@ -1,0 +1,345 @@
+import { Meal, Testimonial, WeeklyPlanData } from './types';
+
+export const MEALS_CATALOG: Meal[] = [
+  {
+    id: 'miso_salmon',
+    name: 'Miso Glazed Salmon Bowl',
+    category: 'Lunch',
+    dietTags: ['High Protein', 'Keto Friendly', 'Low Carb'],
+    price: 14.50,
+    rating: 4.9,
+    reviewsCount: 124,
+    prepTime: 25,
+    calories: 480,
+    macros: { protein: 34, carbs: 42, fat: 18 },
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCEB7MEKQJhUChMYOYNGxdZ6_dc6ieXiqcUg1zty-Nk1janZ9KCLmt-LN1XqTj_DQXRjRdDpwaJXbyfAS6_ZqOWA0kzr18Qwpzj-ZKPH3u2pTBsys8URL155uQggu2gzxQJCtt_T3-26e924eq1-OtY2jR3zeL0L654YfQs4_qloUlUVOEhaKFHEtd4NGVFb5DacZ55rXJYbjiyZviKqs415IlzrXxD6q9zW3hRy2n1jEw-l6CcuG98QZAfJp-u1D8kbjcJE0ks7w',
+    description: 'Our signature Miso Glazed Salmon Bowl is a nutritional powerhouse designed for both flavor and function. Sustainable Atlantic salmon is marinated in a 24-hour sweet-savory miso reduction, served alongside nutty organic quinoa and crisp baby bok choy. Rich in Omega-3 fatty acids and high-quality protein, this bowl supports brain health and sustained energy levels throughout your day.',
+    highlightTags: ['GLUTEN FREE', 'HIGH PROTEIN', 'OMEGA-3 RICH']
+  },
+  {
+    id: 'avocado_egg_bowl',
+    name: 'Avocado & Poached Egg Bowl',
+    category: 'Breakfast',
+    dietTags: ['Low Carb', 'Organic', 'Paleo'],
+    price: 11.25,
+    rating: 4.8,
+    reviewsCount: 96,
+    prepTime: 15,
+    calories: 450,
+    macros: { protein: 18, carbs: 12, fat: 34 },
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDjnXgPa5gIk3Qbf15Eb-qWd52vnpnc5sd8lcgY9M8uUqUuZnA7q6C7oXNULQsuJ8M1u_p4c5kV1hDMXtj3WYSOcfN-5fbjqCluVAJ4jHMmYloO1H_aJgLqhmAyZ5FAel198npRE_Kqh7-iHKHfxQAWXpWHgRyllZPuCHSfS47iv1ifFEjX9_V5v9kWHh_mTOYfl0AVewDJJzliDGqzhVWoQ3qLaY9e-xttHe_yS0FS2LIYMtqZNjwJqYeLvwN5Vb0ofQ8R6kEFKg',
+    description: 'A vibrant breakfast bowl centering fresh sliced avocado, perfectly poached eggs, smoked salmon, and a bed of dark leafy greens. Drizzled with lemon-herb infusion.',
+    highlightTags: ['ORGANIC', 'LOW CARB', 'BIO-AVAILABILITY']
+  },
+  {
+    id: 'lemon_garlic_salmon',
+    name: 'Lemon Garlic Salmon',
+    category: 'Lunch',
+    dietTags: ['High Protein', 'Paleo', 'Keto Friendly'],
+    price: 15.95,
+    rating: 4.9,
+    reviewsCount: 154,
+    prepTime: 25,
+    calories: 620,
+    macros: { protein: 42, carbs: 10, fat: 38 },
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuABScPOKOhyYQcpf-ZQR9DLsGvD6LVro344IIMHkd9Uph_Zo7JU6T4w1J2xP36dub-eqY0eEBKNT9dZPDYo5Pr1IH8Ku-x-3q2Fi55WIIcJpyMaYi52FpAWaMu-UTnuQ5w2LYkmqysaJXokg_iqH5A8XCZTiZSmodQiB0Xl0FwGRxx5-A9McuumxSjHE1IFFDoZ5-4Q1Xsd5Sscw9Up5eDtkEwPc3oc5ZpQCvTFp-TAGX-3EoBH2cDuHQKiwSzZXKeTNLxFVnrPDA',
+    description: 'A gourmet grilled salmon fillet served with roasted asparagus and a zesty quinoa salad. High-key nutrient retention and absolute lean satisfaction.',
+    highlightTags: ['CHEF CRAFTED', 'OMEGA-3 POWER', 'GLUTEN FREE']
+  },
+  {
+    id: 'mediterranean_power_bowl',
+    name: 'Mediterranean Power Bowl',
+    category: 'Dinner',
+    dietTags: ['Vegan', 'High Fiber', 'Organic'],
+    price: 12.50,
+    rating: 4.7,
+    reviewsCount: 204,
+    prepTime: 10,
+    calories: 380,
+    macros: { protein: 14, carbs: 55, fat: 12 },
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAjfRCUWOMGke8iVjOyjSfUCcKKW-5TE980fSenDQjqbiIX2d-L_As9wxgcq8T4JPbmVgrkg8wa7vWHLT_4OpMMu1ui_CLLZCGA03HBjZRroLukh3Mhl2WVa2teOTB3pIaFKYN3bqnLyqk-t-6iENmOxWHPXwOjT_T_8cDNbmD9XIhNdXTxE50vC5KeHSl3ato_My0mRFk8MSriJGLIcFHnjtR2hy17jpxKv1l73wGI68uOOjCtCG3gn13SiYxV9Sw3YRk7_2QkNg',
+    description: 'A rich and diverse Mediterranean power bowl filled with bright cherry tomatoes, cucumber, Kalamata olives, creamy vegan feta substitute or chickpeas on dynamic spinach greens.',
+    highlightTags: ['VEGAN FRIENDLY', 'HIGH FIBER', 'HEART HEALTHY']
+  },
+  {
+    id: 'zesty_kale_chickpea',
+    name: 'Zesty Kale & Chickpea',
+    category: 'Lunch',
+    dietTags: ['Vegan', 'Organic', 'Low Carb'],
+    price: 12.00,
+    rating: 4.6,
+    reviewsCount: 88,
+    prepTime: 15,
+    calories: 320,
+    macros: { protein: 12, carbs: 48, fat: 8 },
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCbxeVWnX_fjfZVxnkNUbTuZeFPxKtJNhyu_6mk2pVmzxttlim2CVwuaLsoLgldMKKKZVbYAu92BP22IBNmIC4YQgtcq-9-1vhvrprTx1Rtln1nCmad_jeT6oNi4itY7s1XffZGDbsilG1cBerbhU_9UPwsre7kqcvNvzYdHAl-chKcpoOUVzoNAQ500vHz_kojbUe7EWTwIozztHU8UznplqWUdS976W5j8VJ67MNIdIxhqOC7f166XoGbmfuxhgTG06rtwSkwHQ',
+    description: 'Mediterranean kale and chickpea salad with zesty dressing, roasted sunflower seeds, and organic sun-dried tomatoes.',
+    highlightTags: ['RAW NUTRIENTS', 'CLEAN DETOX', 'VIBRANT GREENS']
+  },
+  {
+    id: 'steak_roots',
+    name: 'Grass-Fed Steak & Roots',
+    category: 'Dinner',
+    dietTags: ['Keto Friendly', 'High Protein', 'Paleo'],
+    price: 18.90,
+    rating: 4.9,
+    reviewsCount: 220,
+    prepTime: 35,
+    calories: 650,
+    macros: { protein: 48, carbs: 12, fat: 42 },
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAK6jtmwArySQMiMvPAte5jRE85AkpNKwiaX8GFVbSjhct4CUib9SKpKJ-i1ObpVr-1wGMi3yBUzSK77b-IrXsxHBB__5JFVXo2zTqEGAWnfKl5K5C41M8jUHgJgAldsjwudUtv4ABzF18uQa7trKeTo4FZaHiIgWlYfrr7xyLjKh7d4uoorl2xq_XC8NSIIHqfHGnoiX-SuoGC8x64iBlBmcdiBrhVK6lYCgZuipYpPZOxsiU5K3Ei9b1vuCEJCzEBpst0dtraXQ',
+    description: 'A perfectly seared ribbon beef tender steak served with roasted seasonal parsnips, root vegetables and custom herb-infused butter.',
+    highlightTags: ['PREMIUM CUTS', 'KETO COMPLIANT', 'IMMUNITY BOOSTER']
+  },
+  {
+    id: 'steamed_bass',
+    name: 'Ginger Steamed Sea Bass',
+    category: 'Dinner',
+    dietTags: ['Low Carb', 'High Protein', 'Organic'],
+    price: 16.00,
+    rating: 4.8,
+    reviewsCount: 112,
+    prepTime: 30,
+    calories: 380,
+    macros: { protein: 28, carbs: 18, fat: 14 },
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAbB3PZbnktxKgeEysB2YjBtl4BOGiO3TKfD1lEvd3RmyUsldUOPnJtdxBZ6haA-Z3_kYyJEvkZKoElnmOQmu_64HIi19p4iMhJ3ize-ufdRfddHuHXoObrDT6_MfF3PipVyLFJO71LCOKjygWeyrgrXIxg9WlSDauid24iFLte72FnsxUm1VP8Gtz5YWBCfVn7dF_TF0vaEv-eeZwcTIfdLOrAkREYrUGP1Jw2Y9g25E4Poy7RvoKRH3M4By8HlQri649kVm4xAQ',
+    description: 'Delicate steamed wild-caught sea bass over a bed of jasmine rice and crisp snap peas, garnished with minced ginger and farm-fresh scallions.',
+    highlightTags: ['SEA FRESH', 'DIGESTION AID', 'LOW CALORIE']
+  },
+  {
+    id: 'taco_harvest',
+    name: 'Rainbow Taco Harvest',
+    category: 'Dinner',
+    dietTags: ['Vegan', 'High Fiber', 'Organic'],
+    price: 13.50,
+    rating: 4.7,
+    reviewsCount: 95,
+    prepTime: 20,
+    calories: 410,
+    macros: { protein: 18, carbs: 54, fat: 12 },
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB0l_CT5pn9dFo2i8kJ_Iqwvg08Pci4TH2HHPgGfJtvlsNG0XHjlwqWM3n19rF3xTe1NYYbgyOWD8mJJ2h5-C3a6-7Vm8ElYkxIjAaAWHqmNVbv7IgWnEKjUBpqndF_RfRaeT9MEy6Wt0olOCgFjuHXLGgNA99U7yp16fokwY545GlNZ6f9madSRT0d9obZZRCd9vjg12NfHy4hQxMHu86Ct4ET_NE8ot_psRPxmRvKpy2zjcb6XnOPR49lOIeIvS7e6FbDFP_jIA',
+    description: 'Mexican style taco bowl loaded with seasoned black beans, sweet yellow corn salsa, bell pepper strips, and creamy diced avo over hand-grated cauliflower rice base.',
+    highlightTags: ['FIBER BUST', 'ANTIOXIDANTS RICH', '100% PLANT']
+  },
+  {
+    id: 'lemon_herb_chicken',
+    name: 'Lemon Herb Roast Chicken',
+    category: 'Lunch',
+    dietTags: ['High Protein', 'Paleo', 'Organic'],
+    price: 15.25,
+    rating: 4.8,
+    reviewsCount: 142,
+    prepTime: 28,
+    calories: 520,
+    macros: { protein: 42, carbs: 28, fat: 22 },
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDqgNgJdbkzPnSpf1GgPWyr4eXf_XYE6cg-F7ZkW_oUn3GGBnPsvymI8c2kg9YkhwEyioK_z2QkQ5a7nDBa40-erTxz0IiMHZr9OORB4UW0ZVvdnFxRzGIfm6DW3J3xxJwx8pENsJnwu216P-s9PquietmLVI_rh0Z_Inm-Mt7mcSYiogN57NXIrnCllQkzSW01ymhmiaw30qVnlGyQya_wZeMaeJQrB3dtS_AvLfyWgaFbTh9UCxzFbnOR_62wlPbemvERfqNLkQ',
+    description: 'A beautifully roasted heritage chicken breast with fresh lemon slices, rosemary sprigs, and a light accompaniment of roasted spears of asparagus and wild black rice.',
+    highlightTags: ['FREE RANGE', 'MUSCLE GROWTH', 'CLEAN CARBS']
+  },
+  // Extra items to fulfill the weekly planner calendar slots
+  {
+    id: 'berry_smoothie',
+    name: 'Berry Smoothie Bowl',
+    category: 'Breakfast',
+    dietTags: ['Vegan', 'Organic', 'High Fiber'],
+    price: 9.50,
+    rating: 4.7,
+    reviewsCount: 180,
+    prepTime: 8,
+    calories: 310,
+    macros: { protein: 11, carbs: 58, fat: 6 },
+    image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?auto=format&fit=crop&q=80&w=600',
+    description: 'An organic acai berry puree blended with homemade almond milk, topped with antioxidant-rich goji berries, fresh chia seeds, sliced bananas and crispy grain granola.',
+    highlightTags: ['PROTEIN EXTRA', 'BERRY POWER', 'ANTIOXIDANT BOOST']
+  },
+  {
+    id: 'avocado_toast',
+    name: 'Dynamic Avocado Toast',
+    category: 'Breakfast',
+    dietTags: ['Vegan', 'Organic'],
+    price: 9.00,
+    rating: 4.6,
+    reviewsCount: 135,
+    prepTime: 10,
+    calories: 290,
+    macros: { protein: 9, carbs: 32, fat: 14 },
+    image: 'https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&q=80&w=600',
+    description: 'Sourdough toast rubbed with garlic first, topped with smashed ripe Hass avocados, cherry tomatoes, microgreens, and red pepper flakes.',
+    highlightTags: ['WHOLE GRAIN', 'HEALTHY FATS', 'quick PREP']
+  },
+  {
+    id: 'greek_yogurt',
+    name: 'Greek Honey Yogurt',
+    category: 'Breakfast',
+    dietTags: ['High Protein', 'Keto Friendly'],
+    price: 8.50,
+    rating: 4.8,
+    reviewsCount: 108,
+    prepTime: 5,
+    calories: 250,
+    macros: { protein: 22, carbs: 14, fat: 8 },
+    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&q=80&w=600',
+    description: 'Thick strained organic Greek yogurt sweetened with wild honey, sprinkled with roasted walnuts and fresh local blackberries.',
+    highlightTags: ['PROBIOTICS RICH', 'DENSE PROTEIN', 'ZERO ADDITIVES']
+  },
+  {
+    id: 'protein_pancakes',
+    name: 'Oats & Oats Protein Pancakes',
+    category: 'Breakfast',
+    dietTags: ['High Protein', 'Organic'],
+    price: 10.50,
+    rating: 4.9,
+    reviewsCount: 225,
+    prepTime: 12,
+    calories: 380,
+    macros: { protein: 28, carbs: 42, fat: 6 },
+    image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&q=80&w=600',
+    description: 'Fluffy whole grain pancakes made from whey isolate, blended rolled oats, and organic local egg whites. Served with zero-sugar maple syrup.',
+    highlightTags: ['CLEAN WHEY', 'SLOW ENERGY', 'LOW SODIUM']
+  },
+  {
+    id: 'lentil_pasta',
+    name: 'Bolognese Lentil Pasta',
+    category: 'Dinner',
+    dietTags: ['Vegan', 'High Fiber', 'High Protein'],
+    price: 13.00,
+    rating: 4.5,
+    reviewsCount: 76,
+    prepTime: 20,
+    calories: 440,
+    macros: { protein: 24, carbs: 62, fat: 10 },
+    image: 'https://images.unsplash.com/photo-1546548970-71785318a17b?auto=format&fit=crop&q=80&w=600',
+    description: 'High-protein lentil pasta penne tossed with custom fire-roasted tomatoes, crushed garlic, textured pea protein crumble, and basil leaves.',
+    highlightTags: ['PLANT BOUNTY', 'FIBER PLUS', 'AUTHENTIC ITALIAN']
+  },
+  {
+    id: 'tuna_wrap',
+    name: 'Whole Wheat Tuna Wrap',
+    category: 'Lunch',
+    dietTags: ['High Protein', 'Low Carb'],
+    price: 11.50,
+    rating: 4.6,
+    reviewsCount: 90,
+    prepTime: 7,
+    calories: 390,
+    macros: { protein: 31, carbs: 24, fat: 12 },
+    image: 'https://images.unsplash.com/photo-1626700051175-6518c4793f4f?auto=format&fit=crop&q=80&w=600',
+    description: 'Flaky albacore tuna combined with low-sodium avocado oil mayonnaise, chopped baby cucumbers, and sprouts wrapped tightly in high-fiber whole wheat tortilla.',
+    highlightTags: ['LEAN MEAL', 'BRAIN FUEL', 'PORTABLE MEAL']
+  },
+  {
+    id: 'beef_stir_fry',
+    name: 'Szechuan Beef Stir-fry',
+    category: 'Dinner',
+    dietTags: ['High Protein', 'Keto Friendly', 'Paleo'],
+    price: 16.50,
+    rating: 4.7,
+    reviewsCount: 119,
+    prepTime: 18,
+    calories: 560,
+    macros: { protein: 38, carbs: 16, fat: 28 },
+    image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=600',
+    description: 'Thinly sliced grass-fed strip loin stir-fried in a hot wok with green bell peppers, broccoli florets, and a spicy low-glycemic Szechuan sauce.',
+    highlightTags: ['WOK STYLE', 'HIGH SODIUM CAUTION', 'IRON ENRICHED']
+  },
+  {
+    id: 'cobb_salad',
+    name: 'Classic NutriGo Cobb',
+    category: 'Lunch',
+    dietTags: ['Keto Friendly', 'High Protein', 'Paleo'],
+    price: 13.00,
+    rating: 4.8,
+    reviewsCount: 140,
+    prepTime: 12,
+    calories: 490,
+    macros: { protein: 36, carbs: 8, fat: 34 },
+    image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=600',
+    description: 'Crisp iceberg lettuce topped with diced roasted free-range chicken breast, crispy bacon bits, hard-boiled eggs, blue cheese crumbles, and red wine vinaigrette.',
+    highlightTags: ['KETO TRADITIONAL', 'CRISP TEXTURE', 'DENSE SATIETY']
+  },
+  {
+    id: 'baked_cod',
+    name: 'Crusted Baked Atlantic Cod',
+    category: 'Dinner',
+    dietTags: ['Low Carb', 'High Protein', 'Organic'],
+    price: 15.50,
+    rating: 4.8,
+    reviewsCount: 132,
+    prepTime: 22,
+    calories: 420,
+    macros: { protein: 34, carbs: 14, fat: 12 },
+    image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&q=80&w=600',
+    description: 'Delicate Atlantic cod fillet baked to perfection with a light herbed breadcrumb topping, served alongside garlic steamed broccoli and roasted carrot strips.',
+    highlightTags: ['WHITE FISH', 'LOW INFLAMMATION', 'VITAMIN D RICH']
+  }
+];
+
+export const TESTIMONIALS: Testimonial[] = [
+  {
+    rating: 5,
+    quote: '"NutriGo removed the guesswork from my diet. I\'ve never felt more energetic during my workouts, and the meals are actually delicious."',
+    author: 'Sarah J.',
+    role: 'Marathon Runner',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMZtSkzxhZSb9zX08p_CanYFZ-m_xrLMXnVmvFATeyiTLdYB-z37amYoCjvKYIklWmxio7hOdYA_QDczy4VCJ3ilizlnH_1opxmME3rEin9qKrFgigsxqifukbqxDgdrQwuoTFuZ9UNl3hXyI8ieQ-HZyBJCk8UXqRomtEBBOlxbrxeVEIeEMoHMYYHsE8F87li9qOdDA2DyCZ906-9EKYaEY1VsE7RWhWzFX07oE7WOYZ4Bw5xlMLL8CVbAQw0APCnuyoE_7W8g'
+  },
+  {
+    rating: 5,
+    quote: '"The tracking integration is a game-changer. It automatically knows when I need more protein after a heavy lifting session."',
+    author: 'Michael R.',
+    role: 'Software Engineer',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1-fR8ikAgIEmEuBkBiZ6WUIQ0FJOt9V_RjQaoBT765y1XsSaG9hu_JMt-O0tuAxER2b8Omh71yW52ejzy8FWCPAMrKK_S_EDaFJwSc7sb0Os7sHx9LKqimd8_bqDRGIwjLx5_DcUXZQuS3aMi_y8MR77ax7SfaF2Om5RoT46yiE3NogTKy-Moku47QWZQGUYbHMN2zL2n1eZfYbbh3sDWUbzismmYPmqaSd0Ma-aYO11wxtXWFuT3SHkgMpND2yfn9O07KzVuzQ'
+  },
+  {
+    rating: 5,
+    quote: '"Finally, a nutrition service that understands busy moms. The delivery is always on time, and the packaging is actually sustainable."',
+    author: 'Elena G.',
+    role: 'Parent & Entrepreneur',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAP7JqqjM2DcluEyj94wibL8_R5bGtU_FHQJgl41rFcVH7uwLHUW5QBjRU73pwO0dEqn9JGrAap3T5CW6DlbdlHU23hIBAZbLmPOKoiVsxCswzVbTIm437bJ7eVdm1vSs3cfRv9i_1ZHSSc-mWJzNYAE9ns0ec1LjdQs5wK290R099MQYgV3w7_m_dh0mlPLkj_D19Ne1pSz8tELHUpCzjl7gLEVD2tEFAXAIW0URbKBsAUevsMipO46b_yUjLr2s5HQPuX_LnhDg'
+  }
+];
+
+// Seed initial default weekly plans matching the exact screenshot (Week of Oct 14 - Oct 20, 2024)
+export const DEFAULT_WEEK_PLAN: WeeklyPlanData = {
+  'MON': {
+    breakfast: MEALS_CATALOG.find(m => m.id === 'berry_smoothie') || MEALS_CATALOG[9],
+    lunch: MEALS_CATALOG.find(m => m.id === 'lemon_garlic_salmon') || MEALS_CATALOG[2],
+    dinner: MEALS_CATALOG.find(m => m.id === 'mediterranean_power_bowl') || MEALS_CATALOG[3],
+    caloriesPlanned: 1950
+  },
+  'TUE': {
+    breakfast: MEALS_CATALOG.find(m => m.id === 'avocado_toast') || MEALS_CATALOG[10],
+    lunch: MEALS_CATALOG.find(m => m.id === 'lemon_herb_chicken') || MEALS_CATALOG[8],
+    dinner: MEALS_CATALOG.find(m => m.id === 'lentil_pasta') || MEALS_CATALOG[13],
+    caloriesPlanned: 1820
+  },
+  'WED': {
+    breakfast: MEALS_CATALOG.find(m => m.id === 'greek_yogurt') || MEALS_CATALOG[11],
+    lunch: MEALS_CATALOG.find(m => m.id === 'tuna_wrap') || MEALS_CATALOG[14],
+    dinner: MEALS_CATALOG.find(m => m.id === 'mediterranean_power_bowl') || MEALS_CATALOG[3], // Mediterranean Bowl Highlight!
+    caloriesPlanned: 1740
+  },
+  'THU': {
+    breakfast: MEALS_CATALOG.find(m => m.id === 'greek_yogurt') || MEALS_CATALOG[11],
+    lunch: MEALS_CATALOG.find(m => m.id === 'tuna_wrap') || MEALS_CATALOG[14],
+    dinner: MEALS_CATALOG.find(m => m.id === 'beef_stir_fry') || MEALS_CATALOG[15],
+    caloriesPlanned: 2010
+  },
+  'FRI': {
+    breakfast: MEALS_CATALOG.find(m => m.id === 'protein_pancakes') || MEALS_CATALOG[12],
+    lunch: MEALS_CATALOG.find(m => m.id === 'cobb_salad') || MEALS_CATALOG[16],
+    dinner: MEALS_CATALOG.find(m => m.id === 'baked_cod') || MEALS_CATALOG[17],
+    caloriesPlanned: 1880
+  },
+  'SAT': {
+    breakfast: MEALS_CATALOG.find(m => m.id === 'berry_smoothie') || MEALS_CATALOG[9],
+    lunch: MEALS_CATALOG.find(m => m.id === 'zesty_kale_chickpea') || MEALS_CATALOG[4],
+    dinner: MEALS_CATALOG.find(m => m.id === 'steak_roots') || MEALS_CATALOG[5],
+    caloriesPlanned: 1910
+  },
+  'SUN': {
+    breakfast: MEALS_CATALOG.find(m => m.id === 'avocado_egg_bowl') || MEALS_CATALOG[1],
+    lunch: MEALS_CATALOG.find(m => m.id === 'steamed_bass') || MEALS_CATALOG[6],
+    dinner: MEALS_CATALOG.find(m => m.id === 'taco_harvest') || MEALS_CATALOG[7],
+    caloriesPlanned: 1850
+  }
+};

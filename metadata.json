@@ -1,0 +1,6 @@
+{
+  "name": "NutriGo Healthy Meal Planner",
+  "description": "A technology-driven healthy meal planning and delivery platform providing personalized recommendations and tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
