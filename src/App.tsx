@@ -202,7 +202,7 @@ export default function App() {
           hydration_current_ml: next.currentMl,
           hydration_goal_ml: next.goalMl,
           updated_at: new Date().toISOString()
-        }).catch(console.error);
+        }).then(({ error }) => { if (error) console.error(error) });
       }
       return next;
     });
@@ -238,7 +238,7 @@ export default function App() {
           id: currentUser.id,
           weekly_plan: next,
           updated_at: new Date().toISOString()
-        }).catch(console.error);
+        }).then(({ error }) => { if (error) console.error(error) });
       }
 
       return next;
@@ -277,7 +277,7 @@ export default function App() {
           id: currentUser.id,
           weekly_plan: next,
           updated_at: new Date().toISOString()
-        }).catch(console.error);
+        }).then(({ error }) => { if (error) console.error(error) });
       }
 
       return next;
@@ -292,7 +292,7 @@ export default function App() {
         id: currentUser.id,
         is_subscribed: newState,
         updated_at: new Date().toISOString()
-      }).catch(console.error);
+      }).then(({ error }) => { if (error) console.error(error) });
     }
     alert(newState ? "Thank you for subscribing to Premium personalized NutriGo Pro!" : "Subscription paused successfully.");
   };
@@ -507,7 +507,7 @@ export default function App() {
                           id: currentUser.id,
                           meal_alerts_enabled: val,
                           updated_at: new Date().toISOString()
-                        }).catch(console.error);
+                        }).then(({ error }) => { if (error) console.error(error) });
                       }
                     }}
                     className="sr-only peer"
@@ -542,7 +542,7 @@ export default function App() {
                               id: currentUser.id,
                               breakfast_time: val,
                               updated_at: new Date().toISOString()
-                            }).catch(console.error);
+                            }).then(({ error }) => { if (error) console.error(error) });
                           }
                         }}
                         className="w-full text-xs font-bold bg-white border border-[#c2c9bc]/40 rounded-lg p-1 mt-0.5"
@@ -562,7 +562,7 @@ export default function App() {
                               id: currentUser.id,
                               lunch_time: val,
                               updated_at: new Date().toISOString()
-                            }).catch(console.error);
+                            }).then(({ error }) => { if (error) console.error(error) });
                           }
                         }}
                         className="w-full text-xs font-bold bg-white border border-[#c2c9bc]/40 rounded-lg p-1 mt-0.5"
@@ -582,7 +582,7 @@ export default function App() {
                               id: currentUser.id,
                               dinner_time: val,
                               updated_at: new Date().toISOString()
-                            }).catch(console.error);
+                            }).then(({ error }) => { if (error) console.error(error) });
                           }
                         }}
                         className="w-full text-xs font-bold bg-white border border-[#c2c9bc]/40 rounded-lg p-1 mt-0.5"
@@ -614,7 +614,7 @@ export default function App() {
                             id: currentUser.id,
                             name: next.name,
                             updated_at: new Date().toISOString()
-                          }).catch(console.error);
+                          }).then(({ error }) => { if (error) console.error(error) });
                         }
                         return next;
                       });
@@ -642,7 +642,7 @@ export default function App() {
                             current_weight: next.currentWeight,
                             weight_trend: next.weightTrend,
                             updated_at: new Date().toISOString()
-                          }).catch(console.error);
+                          }).then(({ error }) => { if (error) console.error(error) });
                         }
                         return next;
                       });
