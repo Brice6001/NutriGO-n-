@@ -9,20 +9,8 @@ import WeeklyPlan from './components/WeeklyPlan';
 import Tracking from './components/Tracking';
 import ProCoach from './components/ProCoach';
 
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut,
-  User
-} from 'firebase/auth';
-import {
-  doc,
-  setDoc,
-  onSnapshot,
-  getDocFromServer
-} from 'firebase/firestore';
-import { auth, db, handleFirestoreError, OperationType } from './firebase';
+import { Session, User } from '@supabase/supabase-js';
+import { supabase } from './supabase';
 
 import { MEALS_CATALOG, DEFAULT_WEEK_PLAN } from './data';
 import { Meal, ScreenType, HydrationLog, UserProfile, WeeklyPlanData } from './types';
@@ -66,15 +54,14 @@ export default function App() {
   const [showNotificationModal, setShowNotificationModal] = useState<boolean>(false);
   const [showProfileModal, setShowProfileModal] = useState<boolean>(false);
 
-  // Validate Connection to Firestore on initial boot
+  // Validate Connection to Supabase on initial boot
   useEffect(() => {
     const testConnection = async () => {
       try {
-        await getDocFromServer(doc(db, 'test', 'connection'));
+        const { error } = await supabase.from('users').select('id').limit(1);
+        if (error) console.error("Supabase connection issue:", error.message);
       } catch (error) {
-        if (error instanceof Error && error.message.includes('the client is offline')) {
-          console.error("Please check your Firebase configuration.");
-        }
+        console.error("Please check your Supabase configuration.");
       }
     };
     testConnection();
@@ -82,85 +69,100 @@ export default function App() {
 
   // Listen to Authentication State
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUser(session?.user ?? null);
       setAuthLoading(false);
     });
-    return () => unsubscribe();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUser(session?.user ?? null);
+      setAuthLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Real-time Firestore sync of user profile and logs
+  // Real-time Supabase sync of user profile and logs
   useEffect(() => {
     if (!currentUser) return;
 
-    const userDocRef = doc(db, 'users', currentUser.uid);
-    const unsubscribe = onSnapshot(userDocRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.data();
+    const fetchUserData = async () => {
+      const { data, error } = await supabase.from('users').select('*').eq('id', currentUser.id).single();
+      
+      if (data) {
         if (data.name) {
           setUserProfile({
             name: data.name,
-            avatar: data.avatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1-fR8ikAgIEmEuBkBiZ6WUIQ0FJOt9V_RjQaoBT765y1XsSaG9hu_JMt-O0tuAxER2b8Omh71yW52ejzy8FWCPAMrKK_S_EDaFJwSc7sb0Os7sHx9LKqimd8_bqDRGIwjLx5_DcUXZQuS3aMi_y8MR77ax7SfaF2Om5RoT46yiE3NogTKy-Moku47QWZQGUYbHMN2zL2n1eZfYbbh3sDWUbzismmYPmqaSd0Ma-aYO11wxtXWFuT3SHkgMpND2yfn9O07KzVuzQ',
-            wellnessStreak: data.wellnessStreak ?? 12,
-            weightTrend: data.weightTrend || [75.4, 75.1, 74.8, 74.5, 74.6, 74.1, 73.8, 73.5, 73.0],
-            currentWeight: data.currentWeight ?? 73.0,
-            targetWeight: data.targetWeight ?? 70.0,
+            avatar: data.avatar || currentUser.user_metadata?.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1-fR8ikAgIEmEuBkBiZ6WUIQ0FJOt9V_RjQaoBT765y1XsSaG9hu_JMt-O0tuAxER2b8Omh71yW52ejzy8FWCPAMrKK_S_EDaFJwSc7sb0Os7sHx9LKqimd8_bqDRGIwjLx5_DcUXZQuS3aMi_y8MR77ax7SfaF2Om5RoT46yiE3NogTKy-Moku47QWZQGUYbHMN2zL2n1eZfYbbh3sDWUbzismmYPmqaSd0Ma-aYO11wxtXWFuT3SHkgMpND2yfn9O07KzVuzQ',
+            wellnessStreak: data.wellness_streak ?? 12,
+            weightTrend: data.weight_trend || [75.4, 75.1, 74.8, 74.5, 74.6, 74.1, 73.8, 73.5, 73.0],
+            currentWeight: data.current_weight ?? 73.0,
+            targetWeight: data.target_weight ?? 70.0,
           });
         }
-        if (typeof data.mealAlertsEnabled === 'boolean') {
-          setMealAlertsEnabled(data.mealAlertsEnabled);
+        if (typeof data.meal_alerts_enabled === 'boolean') setMealAlertsEnabled(data.meal_alerts_enabled);
+        if (typeof data.is_subscribed === 'boolean') setIsSubscribed(data.is_subscribed);
+        if (data.breakfast_time) setBreakfastTime(data.breakfast_time);
+        if (data.lunch_time) setLunchTime(data.lunch_time);
+        if (data.dinner_time) setDinnerTime(data.dinner_time);
+        if (data.hydration_current_ml !== undefined && data.hydration_goal_ml !== undefined) {
+          setHydration({ currentMl: data.hydration_current_ml, goalMl: data.hydration_goal_ml });
         }
-        if (typeof data.isSubscribed === 'boolean') {
-          setIsSubscribed(data.isSubscribed);
-        }
-        if (data.breakfastTime) setBreakfastTime(data.breakfastTime);
-        if (data.lunchTime) setLunchTime(data.lunchTime);
-        if (data.dinnerTime) setDinnerTime(data.dinnerTime);
-        if (data.hydrationCurrentMl !== undefined && data.hydrationGoalMl !== undefined) {
-          setHydration({
-            currentMl: data.hydrationCurrentMl,
-            goalMl: data.hydrationGoalMl,
-          });
-        }
-        if (data.weeklyPlan) {
-          setWeeklyPlan(data.weeklyPlan as WeeklyPlanData);
-        }
+        if (data.weekly_plan) setWeeklyPlan(data.weekly_plan as WeeklyPlanData);
       } else {
-        // Document doesn't exist, bootstrap from current state
         const initialDoc = {
-          userId: currentUser.uid,
-          name: currentUser.displayName || 'Alex',
-          avatar: currentUser.photoURL || 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1-fR8ikAgIEmEuBkBiZ6WUIQ0FJOt9V_RjQaoBT765y1XsSaG9hu_JMt-O0tuAxER2b8Omh71yW52ejzy8FWCPAMrKK_S_EDaFJwSc7sb0Os7sHx9LKqimd8_bqDRGIwjLx5_DcUXZQuS3aMi_y8MR77ax7SfaF2Om5RoT46yiE3NogTKy-Moku47QWZQGUYbHMN2zL2n1eZfYbbh3sDWUbzismmYPmqaSd0Ma-aYO11wxtXWFuT3SHkgMpND2yfn9O07KzVuzQ',
-          wellnessStreak: 12,
-          weightTrend: [75.4, 75.1, 74.8, 74.5, 74.6, 74.1, 73.8, 73.5, 73.0],
-          currentWeight: 73.0,
-          targetWeight: 70.0,
-          hydrationCurrentMl: 1300,
-          hydrationGoalMl: 2000,
-          mealAlertsEnabled: true,
-          breakfastTime: '08:00',
-          lunchTime: '12:30',
-          dinnerTime: '18:30',
-          isSubscribed: false,
-          weeklyPlan: DEFAULT_WEEK_PLAN,
-          updatedAt: new Date().toISOString()
+          id: currentUser.id,
+          name: currentUser.user_metadata?.full_name || 'Alex',
+          avatar: currentUser.user_metadata?.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1-fR8ikAgIEmEuBkBiZ6WUIQ0FJOt9V_RjQaoBT765y1XsSaG9hu_JMt-O0tuAxER2b8Omh71yW52ejzy8FWCPAMrKK_S_EDaFJwSc7sb0Os7sHx9LKqimd8_bqDRGIwjLx5_DcUXZQuS3aMi_y8MR77ax7SfaF2Om5RoT46yiE3NogTKy-Moku47QWZQGUYbHMN2zL2n1eZfYbbh3sDWUbzismmYPmqaSd0Ma-aYO11wxtXWFuT3SHkgMpND2yfn9O07KzVuzQ',
+          wellness_streak: 12,
+          weight_trend: [75.4, 75.1, 74.8, 74.5, 74.6, 74.1, 73.8, 73.5, 73.0],
+          current_weight: 73.0,
+          target_weight: 70.0,
+          hydration_current_ml: 1300,
+          hydration_goal_ml: 2000,
+          meal_alerts_enabled: true,
+          breakfast_time: '08:00',
+          lunch_time: '12:30',
+          dinner_time: '18:30',
+          is_subscribed: false,
+          weekly_plan: DEFAULT_WEEK_PLAN,
+          updated_at: new Date().toISOString()
         };
-        setDoc(userDocRef, initialDoc).catch((err) => {
-          handleFirestoreError(err, OperationType.CREATE, `users/${currentUser!.uid}`);
-        });
+        await supabase.from('users').insert([initialDoc]);
       }
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, `users/${currentUser.uid}`);
-    });
+    };
+    fetchUserData();
 
-    return () => unsubscribe();
+    const channel = supabase.channel('public:users')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'users', filter: `id=eq.${currentUser.id}` },
+        (payload) => {
+          const data = payload.new as any;
+          if (!data) return;
+          if (data.name) {
+            setUserProfile(prev => ({ ...prev, name: data.name, avatar: data.avatar || prev.avatar, wellnessStreak: data.wellness_streak, weightTrend: data.weight_trend, currentWeight: data.current_weight, targetWeight: data.target_weight }));
+          }
+          if (typeof data.meal_alerts_enabled === 'boolean') setMealAlertsEnabled(data.meal_alerts_enabled);
+          if (typeof data.is_subscribed === 'boolean') setIsSubscribed(data.is_subscribed);
+          if (data.breakfast_time) setBreakfastTime(data.breakfast_time);
+          if (data.lunch_time) setLunchTime(data.lunch_time);
+          if (data.dinner_time) setDinnerTime(data.dinner_time);
+          if (data.hydration_current_ml !== undefined) setHydration(prev => ({ ...prev, currentMl: data.hydration_current_ml, goalMl: data.hydration_goal_ml }));
+          if (data.weekly_plan) setWeeklyPlan(data.weekly_plan);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [currentUser]);
 
   // Auth operations
   const handleGoogleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      await supabase.auth.signInWithOAuth({ provider: 'google' });
     } catch (err: any) {
       console.error("Sign in failed:", err);
     }
@@ -168,7 +170,7 @@ export default function App() {
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+      await supabase.auth.signOut();
       // Reset plan and values to default on logout
       setWeeklyPlan(DEFAULT_WEEK_PLAN);
       setHydration({ currentMl: 1300, goalMl: 2000 });
@@ -195,13 +197,12 @@ export default function App() {
         currentMl: Math.min(prev.goalMl + 500, prev.currentMl + 250),
       };
       if (currentUser) {
-        setDoc(doc(db, 'users', currentUser.uid), {
-          hydrationCurrentMl: next.currentMl,
-          hydrationGoalMl: next.goalMl,
-          updatedAt: new Date().toISOString()
-        }, { merge: true }).catch((err) => {
-          handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
-        });
+        supabase.from('users').upsert({
+          id: currentUser.id,
+          hydration_current_ml: next.currentMl,
+          hydration_goal_ml: next.goalMl,
+          updated_at: new Date().toISOString()
+        }).catch(console.error);
       }
       return next;
     });
@@ -233,12 +234,11 @@ export default function App() {
       };
 
       if (currentUser) {
-        setDoc(doc(db, 'users', currentUser.uid), {
-          weeklyPlan: next,
-          updatedAt: new Date().toISOString()
-        }, { merge: true }).catch((err) => {
-          handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
-        });
+        supabase.from('users').upsert({
+          id: currentUser.id,
+          weekly_plan: next,
+          updated_at: new Date().toISOString()
+        }).catch(console.error);
       }
 
       return next;
@@ -273,12 +273,11 @@ export default function App() {
       };
 
       if (currentUser) {
-        setDoc(doc(db, 'users', currentUser.uid), {
-          weeklyPlan: next,
-          updatedAt: new Date().toISOString()
-        }, { merge: true }).catch((err) => {
-          handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
-        });
+        supabase.from('users').upsert({
+          id: currentUser.id,
+          weekly_plan: next,
+          updated_at: new Date().toISOString()
+        }).catch(console.error);
       }
 
       return next;
@@ -289,10 +288,11 @@ export default function App() {
     const newState = !isSubscribed;
     setIsSubscribed(newState);
     if (currentUser) {
-      setDoc(doc(db, 'users', currentUser.uid), {
-        isSubscribed: newState,
-        updatedAt: new Date().toISOString()
-      }, { merge: true }).catch(console.error);
+      supabase.from('users').upsert({
+        id: currentUser.id,
+        is_subscribed: newState,
+        updated_at: new Date().toISOString()
+      }).catch(console.error);
     }
     alert(newState ? "Thank you for subscribing to Premium personalized NutriGo Pro!" : "Subscription paused successfully.");
   };
@@ -443,12 +443,12 @@ export default function App() {
                 <div className="space-y-2">
                   <div className="bg-white p-2 rounded-xl border border-brand-teal/10 flex items-center gap-2 shadow-xs">
                     <img
-                      src={currentUser.photoURL || userProfile.avatar}
+                      src={currentUser.user_metadata?.avatar_url || userProfile.avatar}
                       alt="avatar"
                       className="w-8 h-8 rounded-full border border-brand-green-primary object-cover shrink-0"
                     />
                     <div className="overflow-hidden">
-                      <p className="text-[11px] font-bold text-brand-teal truncate">{currentUser.displayName || 'Authorized User'}</p>
+                      <p className="text-[11px] font-bold text-brand-teal truncate">{currentUser.user_metadata?.full_name || 'Authorized User'}</p>
                       <p className="text-[9px] text-brand-teal/70 truncate">{currentUser.email}</p>
                     </div>
                   </div>
@@ -503,12 +503,11 @@ export default function App() {
                       const val = e.target.checked;
                       setMealAlertsEnabled(val);
                       if (currentUser) {
-                        setDoc(doc(db, 'users', currentUser.uid), {
-                          mealAlertsEnabled: val,
-                          updatedAt: new Date().toISOString()
-                        }, { merge: true }).catch((err) => {
-                          handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
-                        });
+                        supabase.from('users').upsert({
+                          id: currentUser.id,
+                          meal_alerts_enabled: val,
+                          updated_at: new Date().toISOString()
+                        }).catch(console.error);
                       }
                     }}
                     className="sr-only peer"
@@ -539,12 +538,11 @@ export default function App() {
                           const val = e.target.value;
                           setBreakfastTime(val);
                           if (currentUser) {
-                            setDoc(doc(db, 'users', currentUser.uid), {
-                              breakfastTime: val,
-                              updatedAt: new Date().toISOString()
-                            }, { merge: true }).catch((err) => {
-                              handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
-                            });
+                            supabase.from('users').upsert({
+                              id: currentUser.id,
+                              breakfast_time: val,
+                              updated_at: new Date().toISOString()
+                            }).catch(console.error);
                           }
                         }}
                         className="w-full text-xs font-bold bg-white border border-[#c2c9bc]/40 rounded-lg p-1 mt-0.5"
@@ -560,12 +558,11 @@ export default function App() {
                           const val = e.target.value;
                           setLunchTime(val);
                           if (currentUser) {
-                            setDoc(doc(db, 'users', currentUser.uid), {
-                              lunchTime: val,
-                              updatedAt: new Date().toISOString()
-                            }, { merge: true }).catch((err) => {
-                              handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
-                            });
+                            supabase.from('users').upsert({
+                              id: currentUser.id,
+                              lunch_time: val,
+                              updated_at: new Date().toISOString()
+                            }).catch(console.error);
                           }
                         }}
                         className="w-full text-xs font-bold bg-white border border-[#c2c9bc]/40 rounded-lg p-1 mt-0.5"
@@ -581,12 +578,11 @@ export default function App() {
                           const val = e.target.value;
                           setDinnerTime(val);
                           if (currentUser) {
-                            setDoc(doc(db, 'users', currentUser.uid), {
-                              dinnerTime: val,
-                              updatedAt: new Date().toISOString()
-                            }, { merge: true }).catch((err) => {
-                              handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
-                            });
+                            supabase.from('users').upsert({
+                              id: currentUser.id,
+                              dinner_time: val,
+                              updated_at: new Date().toISOString()
+                            }).catch(console.error);
                           }
                         }}
                         className="w-full text-xs font-bold bg-white border border-[#c2c9bc]/40 rounded-lg p-1 mt-0.5"
@@ -614,12 +610,11 @@ export default function App() {
                       setUserProfile((prev) => {
                         const next = { ...prev, name: newName };
                         if (currentUser) {
-                          setDoc(doc(db, 'users', currentUser.uid), {
+                          supabase.from('users').upsert({
+                            id: currentUser.id,
                             name: next.name,
-                            updatedAt: new Date().toISOString()
-                          }, { merge: true }).catch((err) => {
-                            handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
-                          });
+                            updated_at: new Date().toISOString()
+                          }).catch(console.error);
                         }
                         return next;
                       });
@@ -642,13 +637,12 @@ export default function App() {
                           weightTrend: [...prev.weightTrend.slice(1), newWeight],
                         };
                         if (currentUser) {
-                          setDoc(doc(db, 'users', currentUser.uid), {
-                            currentWeight: next.currentWeight,
-                            weightTrend: next.weightTrend,
-                            updatedAt: new Date().toISOString()
-                          }, { merge: true }).catch((err) => {
-                            handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
-                          });
+                          supabase.from('users').upsert({
+                            id: currentUser.id,
+                            current_weight: next.currentWeight,
+                            weight_trend: next.weightTrend,
+                            updated_at: new Date().toISOString()
+                          }).catch(console.error);
                         }
                         return next;
                       });
