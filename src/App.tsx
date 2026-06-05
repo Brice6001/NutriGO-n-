@@ -9,11 +9,30 @@ import WeeklyPlan from './components/WeeklyPlan';
 import Tracking from './components/Tracking';
 import ProCoach from './components/ProCoach';
 
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+  User
+} from 'firebase/auth';
+import {
+  doc,
+  setDoc,
+  onSnapshot,
+  getDocFromServer
+} from 'firebase/firestore';
+import { auth, db, handleFirestoreError, OperationType } from './firebase';
+
 import { MEALS_CATALOG, DEFAULT_WEEK_PLAN } from './data';
 import { Meal, ScreenType, HydrationLog, UserProfile, WeeklyPlanData } from './types';
 import { Home, Utensils, Calendar, Activity, Sparkles, Bell, Clock, Volume2 } from 'lucide-react';
 
+
 export default function App() {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState<boolean>(true);
+
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('discover');
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
 
@@ -47,12 +66,140 @@ export default function App() {
   const [showNotificationModal, setShowNotificationModal] = useState<boolean>(false);
   const [showProfileModal, setShowProfileModal] = useState<boolean>(false);
 
+  // Validate Connection to Firestore on initial boot
+  useEffect(() => {
+    const testConnection = async () => {
+      try {
+        await getDocFromServer(doc(db, 'test', 'connection'));
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('the client is offline')) {
+          console.error("Please check your Firebase configuration.");
+        }
+      }
+    };
+    testConnection();
+  }, []);
+
+  // Listen to Authentication State
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setAuthLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Real-time Firestore sync of user profile and logs
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const userDocRef = doc(db, 'users', currentUser.uid);
+    const unsubscribe = onSnapshot(userDocRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        if (data.name) {
+          setUserProfile({
+            name: data.name,
+            avatar: data.avatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1-fR8ikAgIEmEuBkBiZ6WUIQ0FJOt9V_RjQaoBT765y1XsSaG9hu_JMt-O0tuAxER2b8Omh71yW52ejzy8FWCPAMrKK_S_EDaFJwSc7sb0Os7sHx9LKqimd8_bqDRGIwjLx5_DcUXZQuS3aMi_y8MR77ax7SfaF2Om5RoT46yiE3NogTKy-Moku47QWZQGUYbHMN2zL2n1eZfYbbh3sDWUbzismmYPmqaSd0Ma-aYO11wxtXWFuT3SHkgMpND2yfn9O07KzVuzQ',
+            wellnessStreak: data.wellnessStreak ?? 12,
+            weightTrend: data.weightTrend || [75.4, 75.1, 74.8, 74.5, 74.6, 74.1, 73.8, 73.5, 73.0],
+            currentWeight: data.currentWeight ?? 73.0,
+            targetWeight: data.targetWeight ?? 70.0,
+          });
+        }
+        if (typeof data.mealAlertsEnabled === 'boolean') {
+          setMealAlertsEnabled(data.mealAlertsEnabled);
+        }
+        if (data.breakfastTime) setBreakfastTime(data.breakfastTime);
+        if (data.lunchTime) setLunchTime(data.lunchTime);
+        if (data.dinnerTime) setDinnerTime(data.dinnerTime);
+        if (data.hydrationCurrentMl !== undefined && data.hydrationGoalMl !== undefined) {
+          setHydration({
+            currentMl: data.hydrationCurrentMl,
+            goalMl: data.hydrationGoalMl,
+          });
+        }
+        if (data.weeklyPlan) {
+          setWeeklyPlan(data.weeklyPlan as WeeklyPlanData);
+        }
+      } else {
+        // Document doesn't exist, bootstrap from current state
+        const initialDoc = {
+          userId: currentUser.uid,
+          name: currentUser.displayName || 'Alex',
+          avatar: currentUser.photoURL || 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1-fR8ikAgIEmEuBkBiZ6WUIQ0FJOt9V_RjQaoBT765y1XsSaG9hu_JMt-O0tuAxER2b8Omh71yW52ejzy8FWCPAMrKK_S_EDaFJwSc7sb0Os7sHx9LKqimd8_bqDRGIwjLx5_DcUXZQuS3aMi_y8MR77ax7SfaF2Om5RoT46yiE3NogTKy-Moku47QWZQGUYbHMN2zL2n1eZfYbbh3sDWUbzismmYPmqaSd0Ma-aYO11wxtXWFuT3SHkgMpND2yfn9O07KzVuzQ',
+          wellnessStreak: 12,
+          weightTrend: [75.4, 75.1, 74.8, 74.5, 74.6, 74.1, 73.8, 73.5, 73.0],
+          currentWeight: 73.0,
+          targetWeight: 70.0,
+          hydrationCurrentMl: 1300,
+          hydrationGoalMl: 2000,
+          mealAlertsEnabled: true,
+          breakfastTime: '08:00',
+          lunchTime: '12:30',
+          dinnerTime: '18:30',
+          weeklyPlan: DEFAULT_WEEK_PLAN,
+          updatedAt: new Date().toISOString()
+        };
+        setDoc(userDocRef, initialDoc).catch((err) => {
+          handleFirestoreError(err, OperationType.CREATE, `users/${currentUser!.uid}`);
+        });
+      }
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, `users/${currentUser.uid}`);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
+
+  // Auth operations
+  const handleGoogleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err: any) {
+      console.error("Sign in failed:", err);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      // Reset plan and values to default on logout
+      setWeeklyPlan(DEFAULT_WEEK_PLAN);
+      setHydration({ currentMl: 1300, goalMl: 2000 });
+      setUserProfile({
+        name: 'Alex',
+        avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1-fR8ikAgIEmEuBkBiZ6WUIQ0FJOt9V_RjQaoBT765y1XsSaG9hu_JMt-O0tuAxER2b8Omh71yW52ejzy8FWCPAMrKK_S_EDaFJwSc7sb0Os7sHx9LKqimd8_bqDRGIwjLx5_DcUXZQuS3aMi_y8MR77ax7SfaF2Om5RoT46yiE3NogTKy-Moku47QWZQGUYbHMN2zL2n1eZfYbbh3sDWUbzismmYPmqaSd0Ma-aYO11wxtXWFuT3SHkgMpND2yfn9O07KzVuzQ',
+        wellnessStreak: 12,
+        weightTrend: [75.4, 75.1, 74.8, 74.5, 74.6, 74.1, 73.8, 73.5, 73.0],
+        currentWeight: 73.0,
+        targetWeight: 70.0,
+      });
+    } catch (err) {
+      console.error("Sign out failed:", err);
+    }
+  };
+
+
   // Hydration interaction callback
   const handleAddWater = () => {
-    setHydration((prev) => ({
-      ...prev,
-      currentMl: Math.min(prev.goalMl + 500, prev.currentMl + 250),
-    }));
+    setHydration((prev) => {
+      const next = {
+        ...prev,
+        currentMl: Math.min(prev.goalMl + 500, prev.currentMl + 250),
+      };
+      if (currentUser) {
+        setDoc(doc(db, 'users', currentUser.uid), {
+          hydrationCurrentMl: next.currentMl,
+          hydrationGoalMl: next.goalMl,
+          updatedAt: new Date().toISOString()
+        }, { merge: true }).catch((err) => {
+          handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
+        });
+      }
+      return next;
+    });
   };
 
   // Select meal interaction callback
@@ -75,10 +222,21 @@ export default function App() {
           (slot === 'dinner' ? meal.calories : dayPlan.dinner?.calories || 0),
       };
 
-      return {
+      const next = {
         ...prev,
         [day]: updatedDayPlan,
       };
+
+      if (currentUser) {
+        setDoc(doc(db, 'users', currentUser.uid), {
+          weeklyPlan: next,
+          updatedAt: new Date().toISOString()
+        }, { merge: true }).catch((err) => {
+          handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
+        });
+      }
+
+      return next;
     });
   };
 
@@ -102,11 +260,24 @@ export default function App() {
       caloriesPlanned: 1850,
     };
 
-    setWeeklyPlan((prev) => ({
-      ...prev,
-      'SAT': defaultSatMeals,
-      'SUN': defaultSunMeals,
-    }));
+    setWeeklyPlan((prev) => {
+      const next = {
+        ...prev,
+        'SAT': defaultSatMeals,
+        'SUN': defaultSunMeals,
+      };
+
+      if (currentUser) {
+        setDoc(doc(db, 'users', currentUser.uid), {
+          weeklyPlan: next,
+          updatedAt: new Date().toISOString()
+        }, { merge: true }).catch((err) => {
+          handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
+        });
+      }
+
+      return next;
+    });
   };
 
   // Core Alert Trigger Routine for weekly meal times
@@ -243,6 +414,50 @@ export default function App() {
               <p className="text-xs text-[#72796e]/90 font-medium">NutriGo Elite Pro tier subscription holder</p>
             </div>
 
+            {/* Google Synchronization Block */}
+            <div className="bg-[#f3f4ed] p-4 rounded-2xl border border-[#c2c9bc]/50 text-left space-y-2">
+              <h4 className="text-xs font-black text-[#1a1c18] flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                Cloud Smart Sync
+              </h4>
+              {currentUser ? (
+                <div className="space-y-2">
+                  <div className="bg-white p-2 rounded-xl border border-[#c2c9bc]/30 flex items-center gap-2">
+                    <img
+                      src={currentUser.photoURL || userProfile.avatar}
+                      alt="avatar"
+                      className="w-8 h-8 rounded-full border border-[#3c6839] object-cover shrink-0"
+                    />
+                    <div className="overflow-hidden">
+                      <p className="text-[11px] font-bold text-[#1a1c18] truncate">{currentUser.displayName || 'Authorized User'}</p>
+                      <p className="text-[9px] text-[#72796e] truncate">{currentUser.email}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full bg-[#ba1a1a]/15 hover:bg-[#ba1a1a]/25 text-[#ba1a1a] font-bold text-[10px] py-1.5 rounded-lg border border-[#ba1a1a]/25 transition-all text-center cursor-pointer"
+                  >
+                    Disconnect Profile Sync
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2 text-center md:text-left">
+                  <p className="text-[10px] text-[#42493f] leading-relaxed">
+                    Protect your plan! Sign in with your Google Account to back up hydration logs, weight parameters, and config meal-time alert schedules.
+                  </p>
+                  <button
+                    onClick={handleGoogleSignIn}
+                    className="w-full bg-[#3c6839] hover:bg-[#345b31] text-white font-extrabold text-[10px] py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-98"
+                  >
+                    <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                      <path d="M12.24 10.285V13.4h6.887C18.2 15.614 15.645 18 12.24 18c-3.86 0-7-3.14-7-7s3.14-7 7-7c1.7 0 3.25.61 4.5 1.62l2.437-2.437C17.31 1.696 14.93 0 12.24 0c-6.075 0-11 4.925-11 11s4.925 11 11 11c5.84 0 11-4.225 11-11 0-.64-.065-1.3-.18-1.715H12.24z" />
+                    </svg>
+                    Sync with Google
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-2 gap-2 text-center bg-[#f3f4ed] p-3 rounded-xl border border-[#c2c9bc]/20">
               <div>
                 <p className="text-[10px] text-[#72796e] font-bold uppercase">Weight</p>
@@ -266,7 +481,18 @@ export default function App() {
                     id="toggle-meal-alerts"
                     type="checkbox"
                     checked={mealAlertsEnabled}
-                    onChange={(e) => setMealAlertsEnabled(e.target.checked)}
+                    onChange={(e) => {
+                      const val = e.target.checked;
+                      setMealAlertsEnabled(val);
+                      if (currentUser) {
+                        setDoc(doc(db, 'users', currentUser.uid), {
+                          mealAlertsEnabled: val,
+                          updatedAt: new Date().toISOString()
+                        }, { merge: true }).catch((err) => {
+                          handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
+                        });
+                      }
+                    }}
                     className="sr-only peer"
                   />
                   <div className="w-9 h-5 bg-[#edefe7] peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#c2c9bc]/20 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#3c6839]"></div>
@@ -291,7 +517,18 @@ export default function App() {
                         id="time-breakfast"
                         type="time"
                         value={breakfastTime}
-                        onChange={(e) => setBreakfastTime(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setBreakfastTime(val);
+                          if (currentUser) {
+                            setDoc(doc(db, 'users', currentUser.uid), {
+                              breakfastTime: val,
+                              updatedAt: new Date().toISOString()
+                            }, { merge: true }).catch((err) => {
+                              handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
+                            });
+                          }
+                        }}
                         className="w-full text-xs font-bold bg-white border border-[#c2c9bc]/40 rounded-lg p-1 mt-0.5"
                       />
                     </div>
@@ -301,7 +538,18 @@ export default function App() {
                         id="time-lunch"
                         type="time"
                         value={lunchTime}
-                        onChange={(e) => setLunchTime(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setLunchTime(val);
+                          if (currentUser) {
+                            setDoc(doc(db, 'users', currentUser.uid), {
+                              lunchTime: val,
+                              updatedAt: new Date().toISOString()
+                            }, { merge: true }).catch((err) => {
+                              handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
+                            });
+                          }
+                        }}
                         className="w-full text-xs font-bold bg-white border border-[#c2c9bc]/40 rounded-lg p-1 mt-0.5"
                       />
                     </div>
@@ -311,7 +559,18 @@ export default function App() {
                         id="time-dinner"
                         type="time"
                         value={dinnerTime}
-                        onChange={(e) => setDinnerTime(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setDinnerTime(val);
+                          if (currentUser) {
+                            setDoc(doc(db, 'users', currentUser.uid), {
+                              dinnerTime: val,
+                              updatedAt: new Date().toISOString()
+                            }, { merge: true }).catch((err) => {
+                              handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
+                            });
+                          }
+                        }}
                         className="w-full text-xs font-bold bg-white border border-[#c2c9bc]/40 rounded-lg p-1 mt-0.5"
                       />
                     </div>
@@ -328,16 +587,60 @@ export default function App() {
               )}
             </div>
 
-            <div className="pt-2 flex justify-between items-center">
-              <button
-                onClick={() => {
-                  const newName = prompt("Update your name:", userProfile.name);
-                  if (newName) setUserProfile(prev => ({ ...prev, name: newName }));
-                }}
-                className="text-[#3c6839] hover:underline font-bold text-xs cursor-pointer"
-              >
-                Edit Name
-              </button>
+            <div className="pt-2 flex flex-wrap justify-between items-center gap-2">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    const newName = prompt("Update your name:", userProfile.name);
+                    if (newName) {
+                      setUserProfile((prev) => {
+                        const next = { ...prev, name: newName };
+                        if (currentUser) {
+                          setDoc(doc(db, 'users', currentUser.uid), {
+                            name: next.name,
+                            updatedAt: new Date().toISOString()
+                          }, { merge: true }).catch((err) => {
+                            handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
+                          });
+                        }
+                        return next;
+                      });
+                    }
+                  }}
+                  className="text-[#3c6839] hover:underline font-bold text-xs cursor-pointer"
+                >
+                  Edit Name
+                </button>
+                <span className="text-[#c2c9bc]">|</span>
+                <button
+                  onClick={() => {
+                    const newWeightStr = prompt("Set your current weight (kg):", String(userProfile.currentWeight));
+                    const newWeight = parseFloat(newWeightStr || '');
+                    if (!isNaN(newWeight) && newWeight > 0) {
+                      setUserProfile((prev) => {
+                        const next = {
+                          ...prev,
+                          currentWeight: newWeight,
+                          weightTrend: [...prev.weightTrend.slice(1), newWeight],
+                        };
+                        if (currentUser) {
+                          setDoc(doc(db, 'users', currentUser.uid), {
+                            currentWeight: next.currentWeight,
+                            weightTrend: next.weightTrend,
+                            updatedAt: new Date().toISOString()
+                          }, { merge: true }).catch((err) => {
+                            handleFirestoreError(err, OperationType.WRITE, `users/${currentUser!.uid}`);
+                          });
+                        }
+                        return next;
+                      });
+                    }
+                  }}
+                  className="text-[#3c6839] hover:underline font-bold text-xs cursor-pointer"
+                >
+                  Set Weight
+                </button>
+              </div>
               <button
                 onClick={() => setShowProfileModal(false)}
                 className="bg-[#3c6839] text-white px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer inline-block shadow-xs"

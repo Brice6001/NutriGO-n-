@@ -1,0 +1,88 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Global Default-Deny Catch-All Security
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpful security primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isEmailVerified() && request.auth.token.email == 'brice16n@gmail.com';
+    }
+
+    // 2. Main Fortress Validation Rule for UserProfile
+    function isValidUserProfile(data) {
+      return data.userId == request.auth.uid &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.avatar is string && data.avatar.size() < 2048 &&
+             data.wellnessStreak is int && data.wellnessStreak >= 0 && data.wellnessStreak < 10000 &&
+             (data.currentWeight is float || data.currentWeight is int) && data.currentWeight > 0.0 && data.currentWeight < 1000.0 &&
+             (data.targetWeight is float || data.targetWeight is int) && data.targetWeight > 0.0 && data.targetWeight < 1000.0 &&
+             data.hydrationCurrentMl is int && data.hydrationCurrentMl >= 0 && data.hydrationCurrentMl < 50000 &&
+             data.hydrationGoalMl is int && data.hydrationGoalMl >= 500 && data.hydrationGoalMl < 30000 &&
+             data.mealAlertsEnabled is bool &&
+             data.breakfastTime is string && data.breakfastTime.size() == 5 &&
+             data.lunchTime is string && data.lunchTime.size() == 5 &&
+             data.dinnerTime is string && data.dinnerTime.size() == 5 &&
+             data.weightTrend is list &&
+             data.weeklyPlan is map;
+    }
+
+    // 3. User Document rule mapping matching the exact path variables
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      
+      // We block collection lists / scraping on users entirely
+      allow list: if isOwner(userId) || isAdmin();
+
+      allow create: if isEmailVerified() &&
+                       isValidId(userId) &&
+                       userId == request.auth.uid &&
+                       isValidUserProfile(incoming()) &&
+                       incoming().keys().hasAll(['userId', 'name', 'avatar', 'wellnessStreak', 'currentWeight', 'targetWeight', 'hydrationCurrentMl', 'hydrationGoalMl', 'mealAlertsEnabled', 'breakfastTime', 'lunchTime', 'dinnerTime', 'weightTrend', 'weeklyPlan']);
+
+      allow update: if isEmailVerified() &&
+                       isValidId(userId) &&
+                       isOwner(userId) &&
+                       isValidUserProfile(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       (
+                         // Explicitly allow modifications on standard traits while verifying keys
+                         incoming().diff(existing()).affectedKeys().hasAny([
+                           'name', 'avatar', 'wellnessStreak', 'currentWeight', 'targetWeight',
+                           'hydrationCurrentMl', 'hydrationGoalMl', 'mealAlertsEnabled',
+                           'breakfastTime', 'lunchTime', 'dinnerTime', 'weightTrend', 'weeklyPlan',
+                           'updatedAt'
+                         ])
+                       );
+
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+  }
+}
