@@ -285,6 +285,18 @@ export default function App() {
     });
   };
 
+  const handleSubscribeToggle = () => {
+    const newState = !isSubscribed;
+    setIsSubscribed(newState);
+    if (currentUser) {
+      setDoc(doc(db, 'users', currentUser.uid), {
+        isSubscribed: newState,
+        updatedAt: new Date().toISOString()
+      }, { merge: true }).catch(console.error);
+    }
+    alert(newState ? "Thank you for subscribing to Premium personalized NutriGo Pro!" : "Subscription paused successfully.");
+  };
+
   // Core Alert Trigger Routine for weekly meal times
   const triggerMealAlert = (dayKey: string, slot: 'breakfast' | 'lunch' | 'dinner', timeStr: string) => {
     const dayPlan = weeklyPlan[dayKey];
@@ -670,17 +682,7 @@ export default function App() {
         onOpenNotifications={() => setShowNotificationModal(true)}
         onOpenProfile={() => setShowProfileModal(true)}
         isSubscribed={isSubscribed}
-        onSubscribe={() => {
-          const newState = !isSubscribed;
-          setIsSubscribed(newState);
-          if (currentUser) {
-            setDoc(doc(db, 'users', currentUser.uid), {
-              isSubscribed: newState,
-              updatedAt: new Date().toISOString()
-            }, { merge: true }).catch(console.error);
-          }
-          alert(newState ? "Thank you for subscribing to Premium personalized NutriGo Pro!" : "Subscription paused successfully.");
-        }}
+        onSubscribe={handleSubscribeToggle}
       />
 
       {/* Outer Body Container */}
@@ -716,7 +718,7 @@ export default function App() {
                   setSelectedMeal(null);
                 }}
                 isSubscribed={isSubscribed}
-                onSubscribe={() => setIsSubscribed(!isSubscribed)}
+                onSubscribe={handleSubscribeToggle}
               />
             )}
 
@@ -749,9 +751,7 @@ export default function App() {
             {currentScreen === 'pro' && (
               <ProCoach
                 isSubscribed={isSubscribed}
-                onSubscribe={() => {
-                  setIsSubscribed(!isSubscribed);
-                }}
+                onSubscribe={handleSubscribeToggle}
                 userProfile={userProfile}
               />
             )}
