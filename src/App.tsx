@@ -61,7 +61,7 @@ export default function App() {
 
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlanData>(DEFAULT_WEEK_PLAN);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(true);
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
   
   const [showNotificationModal, setShowNotificationModal] = useState<boolean>(false);
   const [showProfileModal, setShowProfileModal] = useState<boolean>(false);
@@ -110,6 +110,9 @@ export default function App() {
         if (typeof data.mealAlertsEnabled === 'boolean') {
           setMealAlertsEnabled(data.mealAlertsEnabled);
         }
+        if (typeof data.isSubscribed === 'boolean') {
+          setIsSubscribed(data.isSubscribed);
+        }
         if (data.breakfastTime) setBreakfastTime(data.breakfastTime);
         if (data.lunchTime) setLunchTime(data.lunchTime);
         if (data.dinnerTime) setDinnerTime(data.dinnerTime);
@@ -138,6 +141,7 @@ export default function App() {
           breakfastTime: '08:00',
           lunchTime: '12:30',
           dinnerTime: '18:30',
+          isSubscribed: false,
           weeklyPlan: DEFAULT_WEEK_PLAN,
           updatedAt: new Date().toISOString()
         };
@@ -176,6 +180,7 @@ export default function App() {
         currentWeight: 73.0,
         targetWeight: 70.0,
       });
+      setIsSubscribed(false);
     } catch (err) {
       console.error("Sign out failed:", err);
     }
@@ -404,50 +409,52 @@ export default function App() {
       )}
 
       {showProfileModal && (
-        <div className="fixed inset-0 bg-[#1a1c18]/40 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full border border-[#c2c9bc]/50 shadow-lg space-y-4 animate-fade-in animate-scale-up text-center">
-            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#3c6839] mx-auto shadow-xs relative">
+        <div className="fixed inset-0 bg-brand-teal/40 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full border border-brand-teal/20 shadow-lg space-y-4 animate-fade-in animate-scale-up text-center">
+            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand-green-primary mx-auto shadow-xs relative">
               <img src={userProfile.avatar} alt={userProfile.name} className="w-full h-full object-cover" />
             </div>
             <div>
-              <h3 className="font-display font-extrabold text-md text-[#1a1c18]">{userProfile.name}'s Profile Settings</h3>
-              <p className="text-xs text-[#72796e]/90 font-medium">NutriGo Elite Pro tier subscription holder</p>
+              <h3 className="font-display font-extrabold text-md text-brand-teal">{userProfile.name}'s Profile Settings</h3>
+              <p className="text-xs text-brand-teal/70 font-medium">
+                {isSubscribed ? 'NutriGo Elite Pro tier active' : 'NutriGo Basic Member'}
+              </p>
             </div>
 
             {/* Google Synchronization Block */}
-            <div className="bg-[#f3f4ed] p-4 rounded-2xl border border-[#c2c9bc]/50 text-left space-y-2">
-              <h4 className="text-xs font-black text-[#1a1c18] flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+            <div className="bg-gray-50 p-4 rounded-2xl border border-brand-teal/10 text-left space-y-2">
+              <h4 className="text-xs font-black text-brand-teal flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-brand-green-secondary fill-brand-green-secondary" />
                 Cloud Smart Sync
               </h4>
               {currentUser ? (
                 <div className="space-y-2">
-                  <div className="bg-white p-2 rounded-xl border border-[#c2c9bc]/30 flex items-center gap-2">
+                  <div className="bg-white p-2 rounded-xl border border-brand-teal/10 flex items-center gap-2 shadow-xs">
                     <img
                       src={currentUser.photoURL || userProfile.avatar}
                       alt="avatar"
-                      className="w-8 h-8 rounded-full border border-[#3c6839] object-cover shrink-0"
+                      className="w-8 h-8 rounded-full border border-brand-green-primary object-cover shrink-0"
                     />
                     <div className="overflow-hidden">
-                      <p className="text-[11px] font-bold text-[#1a1c18] truncate">{currentUser.displayName || 'Authorized User'}</p>
-                      <p className="text-[9px] text-[#72796e] truncate">{currentUser.email}</p>
+                      <p className="text-[11px] font-bold text-brand-teal truncate">{currentUser.displayName || 'Authorized User'}</p>
+                      <p className="text-[9px] text-brand-teal/70 truncate">{currentUser.email}</p>
                     </div>
                   </div>
                   <button
                     onClick={handleSignOut}
-                    className="w-full bg-[#ba1a1a]/15 hover:bg-[#ba1a1a]/25 text-[#ba1a1a] font-bold text-[10px] py-1.5 rounded-lg border border-[#ba1a1a]/25 transition-all text-center cursor-pointer"
+                    className="w-full bg-brand-wine/10 hover:bg-brand-wine/20 text-brand-wine font-bold text-[10px] py-1.5 rounded-lg border border-brand-wine/20 transition-all text-center cursor-pointer"
                   >
                     Disconnect Profile Sync
                   </button>
                 </div>
               ) : (
                 <div className="space-y-2 text-center md:text-left">
-                  <p className="text-[10px] text-[#42493f] leading-relaxed">
+                  <p className="text-[10px] text-brand-teal/80 leading-relaxed">
                     Protect your plan! Sign in with your Google Account to back up hydration logs, weight parameters, and config meal-time alert schedules.
                   </p>
                   <button
                     onClick={handleGoogleSignIn}
-                    className="w-full bg-[#3c6839] hover:bg-[#345b31] text-white font-extrabold text-[10px] py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-98"
+                    className="w-full bg-brand-green-primary hover:bg-brand-green-primary/90 text-white font-extrabold text-[11px] py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-98"
                   >
                     <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
                       <path d="M12.24 10.285V13.4h6.887C18.2 15.614 15.645 18 12.24 18c-3.86 0-7-3.14-7-7s3.14-7 7-7c1.7 0 3.25.61 4.5 1.62l2.437-2.437C17.31 1.696 14.93 0 12.24 0c-6.075 0-11 4.925-11 11s4.925 11 11 11c5.84 0 11-4.225 11-11 0-.64-.065-1.3-.18-1.715H12.24z" />
@@ -458,23 +465,22 @@ export default function App() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-center bg-[#f3f4ed] p-3 rounded-xl border border-[#c2c9bc]/20">
+            <div className="grid grid-cols-2 gap-2 text-center bg-gray-50 p-3 rounded-xl border border-brand-teal/10">
               <div>
-                <p className="text-[10px] text-[#72796e] font-bold uppercase">Weight</p>
-                <p className="text-sm font-black text-[#1a1c18] font-mono">{userProfile.currentWeight} kg</p>
+                <p className="text-[10px] text-brand-teal/70 font-bold uppercase">Weight</p>
+                <p className="text-sm font-black text-brand-teal font-mono">{userProfile.currentWeight} kg</p>
               </div>
               <div>
-                <p className="text-[10px] text-[#72796e] font-bold uppercase font-sans">Objective Target</p>
-                <p className="text-sm font-black text-[#1a1c18] font-mono">{userProfile.targetWeight} kg</p>
+                <p className="text-[10px] text-brand-teal/70 font-bold uppercase font-sans">Objective Target</p>
+                <p className="text-sm font-black text-brand-teal font-mono">{userProfile.targetWeight} kg</p>
               </div>
             </div>
 
-            {/* Notification and Meal Schedule configuration */}
-            <div className="border-t border-b border-[#c2c9bc]/30 py-4 space-y-3 text-left">
+            <div className="border-t border-b border-brand-teal/10 py-4 space-y-3 text-left">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Bell className="w-4 h-4 text-[#3c6839]" />
-                  <span className="text-xs font-black text-[#1a1c18]">Active Meal-Time Alerts</span>
+                  <Bell className="w-4 h-4 text-brand-green-primary" />
+                  <span className="text-xs font-black text-brand-teal">Active Meal-Time Alerts</span>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -495,11 +501,11 @@ export default function App() {
                     }}
                     className="sr-only peer"
                   />
-                  <div className="w-9 h-5 bg-[#edefe7] peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#c2c9bc]/20 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#3c6839]"></div>
+                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-green-primary"></div>
                 </label>
               </div>
               
-              <p className="text-[10px] text-[#72796e]">
+              <p className="text-[10px] text-brand-teal/70">
                 Receive standard browser notifications aligned dynamically to your selected weekly meal schedules.
               </p>
 
@@ -643,7 +649,7 @@ export default function App() {
               </div>
               <button
                 onClick={() => setShowProfileModal(false)}
-                className="bg-[#3c6839] text-white px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer inline-block shadow-xs"
+                className="bg-brand-teal text-white px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer inline-block shadow-xs"
               >
                 Close Settings
               </button>
@@ -665,8 +671,15 @@ export default function App() {
         onOpenProfile={() => setShowProfileModal(true)}
         isSubscribed={isSubscribed}
         onSubscribe={() => {
-          setIsSubscribed(!isSubscribed);
-          alert(isSubscribed ? "Subscription paused successfully." : "Thank you for subscribing to Premium personalized NutriGo Pro!");
+          const newState = !isSubscribed;
+          setIsSubscribed(newState);
+          if (currentUser) {
+            setDoc(doc(db, 'users', currentUser.uid), {
+              isSubscribed: newState,
+              updatedAt: new Date().toISOString()
+            }, { merge: true }).catch(console.error);
+          }
+          alert(newState ? "Thank you for subscribing to Premium personalized NutriGo Pro!" : "Subscription paused successfully.");
         }}
       />
 
