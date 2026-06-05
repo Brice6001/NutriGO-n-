@@ -30,7 +30,7 @@ export default function Header({
           <span
             id="brand-logo"
             onClick={() => onNavigate('discover')}
-            className="font-display text-2xl font-extrabold text-[#3c6839] cursor-pointer tracking-tight active:scale-95 transition-transform"
+            className="font-coolvetica text-2xl font-black text-brand-teal cursor-pointer tracking-tight active:scale-95 transition-transform"
           >
             NutriGo
           </span>
@@ -40,10 +40,10 @@ export default function Header({
             <button
               id="nav-discover"
               onClick={() => onNavigate('discover')}
-              className={`font-medium py-1 text-sm border-b-2 transition-all ${
+              className={`font-sans font-medium py-1 text-sm border-b-2 transition-all ${
                 currentScreen === 'discover'
-                  ? 'text-[#3c6839] border-[#3c6839] font-semibold'
-                  : 'text-[#42493f] border-transparent hover:text-[#3c6839]'
+                  ? 'text-brand-green-primary border-brand-green-primary font-semibold'
+                  : 'text-brand-teal/80 border-transparent hover:text-brand-green-primary'
               }`}
             >
               Discover
@@ -51,10 +51,10 @@ export default function Header({
             <button
               id="nav-dashboard"
               onClick={() => onNavigate('dashboard')}
-              className={`font-medium py-1 text-sm border-b-2 transition-all ${
+              className={`font-sans font-medium py-1 text-sm border-b-2 transition-all ${
                 currentScreen === 'dashboard'
-                  ? 'text-[#3c6839] border-[#3c6839] font-semibold'
-                  : 'text-[#42493f] border-transparent hover:text-[#3c6839]'
+                  ? 'text-brand-green-primary border-brand-green-primary font-semibold'
+                  : 'text-brand-teal/80 border-transparent hover:text-brand-green-primary'
               }`}
             >
               Dashboard
@@ -62,10 +62,10 @@ export default function Header({
             <button
               id="nav-meals"
               onClick={() => onNavigate('meals')}
-              className={`font-medium py-1 text-sm border-b-2 transition-all ${
+              className={`font-sans font-medium py-1 text-sm border-b-2 transition-all ${
                 currentScreen === 'meals'
-                  ? 'text-[#3c6839] border-[#3c6839] font-semibold'
-                  : 'text-[#42493f] border-transparent hover:text-[#3c6839]'
+                  ? 'text-brand-green-primary border-brand-green-primary font-semibold'
+                  : 'text-brand-teal/80 border-transparent hover:text-brand-green-primary'
               }`}
             >
               Meals Menu
@@ -73,10 +73,10 @@ export default function Header({
             <button
               id="nav-plan"
               onClick={() => onNavigate('plan')}
-              className={`font-medium py-1 text-sm border-b-2 transition-all ${
+              className={`font-sans font-medium py-1 text-sm border-b-2 transition-all ${
                 currentScreen === 'plan'
-                  ? 'text-[#3c6839] border-[#3c6839] font-semibold'
-                  : 'text-[#42493f] border-transparent hover:text-[#3c6839]'
+                  ? 'text-brand-green-primary border-brand-green-primary font-semibold'
+                  : 'text-brand-teal/80 border-transparent hover:text-brand-green-primary'
               }`}
             >
               Weekly Planner
@@ -84,13 +84,13 @@ export default function Header({
             <button
               id="nav-pro"
               onClick={() => onNavigate('pro')}
-              className={`font-medium py-1 text-sm border-b-2 transition-all flex items-center gap-1 ${
+              className={`font-sans font-medium py-1 text-sm border-b-2 transition-all flex items-center gap-1 ${
                 currentScreen === 'pro'
-                  ? 'text-[#3c6839] border-[#3c6839] font-semibold'
-                  : 'text-[#42493f] border-transparent hover:text-[#3c6839]'
+                  ? 'text-brand-green-primary border-brand-green-primary font-semibold'
+                  : 'text-brand-teal/80 border-transparent hover:text-brand-green-primary'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500 animate-pulse" />
+              <Sparkles className="w-3.5 h-3.5 text-brand-lime fill-brand-lime animate-pulse" />
               Pro Coach
             </button>
           </nav>
@@ -99,8 +99,8 @@ export default function Header({
         {/* Action Elements */}
         <div className="flex items-center gap-4">
           {/* Header Search Bar (Visible on Menu Screens or fallback) */}
-          <div className="hidden lg:flex items-center bg-[#edefe7] rounded-full px-3 py-1.5 border border-[#c2c9bc]/40 focus-within:ring-2 focus-within:ring-[#3c6839]">
-            <Search className="w-4 h-4 text-[#72796e]" />
+          <div className="hidden lg:flex items-center bg-[#f9faf3] rounded-full px-3 py-1.5 border border-brand-teal/20 focus-within:ring-2 focus-within:ring-brand-green-primary">
+            <Search className="w-4 h-4 text-brand-teal/60" />
             <input
               id="header-search-input"
               value={searchQuery}
@@ -112,7 +112,7 @@ export default function Header({
                 }
               }}
               placeholder="Search meals, macros..."
-              className="bg-transparent border-none focus:outline-hidden text-xs ml-2 w-40 text-[#1a1c18]"
+              className="bg-transparent border-none focus:outline-hidden text-xs ml-2 w-40 text-brand-teal font-sans"
             />
           </div>
 
@@ -121,15 +121,15 @@ export default function Header({
             <button
               id="btn-notifications"
               onClick={onOpenNotifications}
-              className="relative p-2 text-[#42493f] hover:text-[#3c6839] hover:bg-[#edefe7] rounded-full transition-all active:scale-95"
+              className="relative p-2 text-brand-teal/80 hover:text-brand-green-primary hover:bg-brand-teal/5 rounded-full transition-all active:scale-95"
             >
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#ba1a1a] rounded-full ring-2 ring-[#f9faf3]" />
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-brand-wine rounded-full ring-2 ring-[#f9faf3]" />
             </button>
             <button
               id="btn-profile"
               onClick={onOpenProfile}
-              className="p-2 text-[#42493f] hover:text-[#3c6839] hover:bg-[#edefe7] rounded-full transition-all active:scale-95"
+              className="p-2 text-brand-teal/80 hover:text-brand-green-primary hover:bg-brand-teal/5 rounded-full transition-all active:scale-95"
             >
               <User className="w-5 h-5" />
             </button>
@@ -139,15 +139,15 @@ export default function Header({
           <button
             id="btn-subscribe"
             onClick={onSubscribe}
-            className={`font-semibold text-xs px-4 py-2 rounded-full transition-all active:scale-95 border cursor-pointer ${
+            className={`font-sans font-bold text-xs px-4 py-2 rounded-full transition-all active:scale-95 border cursor-pointer ${
               isSubscribed
-                ? 'bg-[#cdeb7e] text-[#1a1c18] border-transparent flex items-center gap-1 shadow-xs'
-                : 'bg-[#3c6839] text-[#ffffff] hover:opacity-90 border-transparent shadow-xs'
+                ? 'bg-brand-green-secondary text-brand-teal border-transparent flex items-center gap-1 shadow-xs hover:bg-opacity-90'
+                : 'bg-brand-green-primary text-white border-transparent shadow-xs hover:bg-opacity-95'
             }`}
           >
             {isSubscribed ? (
               <>
-                <Sparkles className="w-3.5 h-3.5 inline text-[#1a1c18]" />
+                <Sparkles className="w-3.5 h-3.5 inline text-brand-teal fill-brand-teal" />
                 Pro Member
               </>
             ) : (

@@ -146,17 +146,17 @@ export default function ProCoach({ isSubscribed, onSubscribe, userProfile }: Pro
   // If NOT subscribed, show an exceptionally high-fidelity Premium paywall screen
   if (!isSubscribed) {
     return (
-      <div id="pro-upgrade-view" className="max-w-4xl mx-auto space-y-8 animate-fade-in py-6">
-        <div className="bg-linear-to-r from-[#3c6839] to-[#466365] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden border border-[#ffffff]/10 shadow-xl">
+      <div id="pro-upgrade-view" className="max-w-4xl mx-auto space-y-8 animate-fade-in py-6 font-sans">
+        <div className="bg-linear-to-r from-brand-green-primary to-brand-teal rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden border border-white/10 shadow-xl">
           <div className="absolute -right-16 -top-16 opacity-10 pointer-events-none">
             <Sparkles className="w-80 h-80 text-white" />
           </div>
 
           <div className="max-w-xl space-y-6 relative z-10 text-left">
-            <span className="bg-[#cdeb7e] text-[#1a1c18] text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider inline-flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 fill-[#1a1c18]" /> NutriGo Pro Lounge
+            <span className="bg-brand-lime text-brand-teal text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider inline-flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5 fill-brand-teal" /> NutriGo Pro Lounge
             </span>
-            <h1 className="font-display font-black text-3xl sm:text-5xl tracking-tight leading-none text-[#d0ee81]">
+            <h1 className="font-coolvetica font-black text-3xl sm:text-5xl tracking-tight leading-none text-brand-lime">
               Unlock Elite Wellness Bio-Synchronization
             </h1>
             <p className="text-white/90 text-sm sm:text-base leading-relaxed">
@@ -170,8 +170,8 @@ export default function ProCoach({ isSubscribed, onSubscribe, userProfile }: Pro
                 { title: "Smart Micro-budget Tracking", desc: "Visual calorie and nutritional label scanning for raw dish structures." }
               ].map((item, i) => (
                 <div key={i} className="flex gap-3">
-                  <div className="mt-1 bg-[#cdeb7e] text-[#3c6839] p-1 h-fit rounded-full">
-                    <Sparkles className="w-3 h-3 fill-[#3c6839]" />
+                  <div className="mt-1 bg-brand-lime text-brand-teal p-1 h-fit rounded-full">
+                    <Sparkles className="w-3 h-3 fill-brand-teal" />
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-[#ffffff]">{item.title}</h4>
@@ -185,12 +185,12 @@ export default function ProCoach({ isSubscribed, onSubscribe, userProfile }: Pro
               <button
                 id="btn-on-demand-upgrade"
                 onClick={onSubscribe}
-                className="bg-[#cdeb7e] text-[#1a1c18] font-black text-sm px-8 py-4 rounded-2xl hover:opacity-95 cursor-pointer active:scale-95 transition-all shadow-md text-center"
+                className="bg-brand-green-secondary text-brand-teal font-black text-sm px-8 py-4 rounded-2xl hover:opacity-95 cursor-pointer active:scale-95 transition-all shadow-md text-center"
               >
                 Activate Free Pro Trial
               </button>
               <div className="flex items-center gap-2 text-xs text-white/70 justify-center">
-                <Lock className="w-4 h-4 text-[#cdeb7e]" /> Cancel anytime instantly • Safe Encryption
+                <Lock className="w-4 h-4 text-brand-lime" /> Cancel anytime instantly • Safe Encryption
               </div>
             </div>
           </div>
@@ -200,31 +200,31 @@ export default function ProCoach({ isSubscribed, onSubscribe, userProfile }: Pro
   }
 
   return (
-    <div className="space-y-8 animate-fade-in max-w-5xl mx-auto">
+    <div className="space-y-8 animate-fade-in max-w-5xl mx-auto font-sans">
       {/* Dynamic Header */}
       <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#c2c9bc]/30 pb-6">
         <div>
           <div className="flex items-center gap-2">
-            <span className="bg-[#3c6839]/10 text-[#3c6839] text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 fill-[#3c6839]" /> Pro Member Active
+            <span className="bg-brand-green-primary/10 text-brand-green-primary text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5 fill-brand-green-primary" /> Pro Member Active
             </span>
           </div>
-          <h1 className="font-display font-black text-3xl md:text-4xl text-[#1a1c18] tracking-tight mt-2">
+          <h1 className="font-display font-black text-3xl md:text-4xl text-brand-teal tracking-tight mt-2">
             Premium Pro Lounge
           </h1>
-          <p className="text-[#42493f] text-sm mt-1">
+          <p className="text-brand-teal/80 text-sm mt-1">
             Access unlimited bio-adaptive diagnostics, automated meal schedulers, and live culinary consultancy.
           </p>
         </div>
 
         {/* Tab Controls */}
-        <div className="flex bg-[#edefe7] p-1.5 rounded-2xl border border-[#c2c9bc]/30 self-start md:self-center">
+        <div className="flex bg-brand-teal/5 p-1.5 rounded-2xl border border-brand-teal/10 self-start md:self-center">
           <button
             onClick={() => setActiveTab('coach')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
               activeTab === 'coach'
-                ? 'bg-[#ffffff] text-[#1a1c18] shadow-xs'
-                : 'text-[#42493f] hover:text-[#1a1c18]'
+                ? 'bg-[#ffffff] text-brand-teal shadow-xs'
+                : 'text-brand-teal/70 hover:text-brand-teal'
             }`}
           >
             <Bot className="w-4 h-4" />
@@ -234,8 +234,8 @@ export default function ProCoach({ isSubscribed, onSubscribe, userProfile }: Pro
             onClick={() => setActiveTab('planner')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
               activeTab === 'planner'
-                ? 'bg-[#ffffff] text-[#1a1c18] shadow-xs'
-                : 'text-[#42493f] hover:text-[#1a1c18]'
+                ? 'bg-[#ffffff] text-brand-teal shadow-xs'
+                : 'text-brand-teal/70 hover:text-brand-teal'
             }`}
           >
             <ClipboardList className="w-4 h-4" />
