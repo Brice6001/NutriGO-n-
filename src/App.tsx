@@ -8,7 +8,7 @@ import MealDetail from './components/MealDetail';
 import WeeklyPlan from './components/WeeklyPlan';
 import Tracking from './components/Tracking';
 import ProCoach from './components/ProCoach';
-import Settings from './components/Settings';
+import Subscription from './components/Subscription';
 
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
@@ -429,7 +429,10 @@ export default function App() {
               <img src={userProfile.avatar} alt={userProfile.name} className="w-full h-full object-cover" />
             </div>
             <div>
-              <h3 className="font-display font-extrabold text-md text-brand-teal">{userProfile.name}'s Profile Settings</h3>
+              <h3 className="font-display font-extrabold text-md text-brand-teal">
+                {userProfile.name}'s Profile Settings
+                {isSubscribed && <Crown className="inline w-4 h-4 text-brand-green-primary" />}
+              </h3>
               <p className="text-xs text-brand-teal/70 font-medium">
                 {isSubscribed ? 'NutriGo Elite Pro tier active' : 'NutriGo Basic Member'}
               </p>
@@ -751,7 +754,14 @@ export default function App() {
                 userProfile={userProfile}
               />
             )}
-          </>
+          {currentScreen === 'subscription' && (
+  <Subscription
+    isSubscribed={isSubscribed}
+    onSubscribe={handleSubscribeToggle}
+    onBack={() => setCurrentScreen('settings')}
+  />
+)}
+</>
         )}
       </main>
 
