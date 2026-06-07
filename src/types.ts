@@ -20,7 +20,17 @@ export interface Meal {
   highlightTags: string[]; // e.g. ['GLUTEN FREE', 'HIGH PROTEIN', 'OMEGA-3 RICH']
 }
 
-export type ScreenType = 'discover' | 'dashboard' | 'meals' | 'plan' | 'tracking' | 'pro';
+export type ScreenType = 'discover' | 'dashboard' | 'meals' | 'plan' | 'tracking' | 'pro' | 'settings';
+
+export type ThemeType = 'light' | 'dark' | 'system';
+export type AiToneType = 'strict' | 'flexible' | 'encouraging';
+
+export interface UserSettings {
+  theme: ThemeType;
+  highContrast: boolean;
+  aiBehavior: AiToneType;
+  privacyAnalytics: boolean;
+}
 
 export interface Testimonial {
   rating: number;

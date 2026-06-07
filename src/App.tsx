@@ -8,13 +8,14 @@ import MealDetail from './components/MealDetail';
 import WeeklyPlan from './components/WeeklyPlan';
 import Tracking from './components/Tracking';
 import ProCoach from './components/ProCoach';
+import Settings from './components/Settings';
 
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
 
 import { MEALS_CATALOG, DEFAULT_WEEK_PLAN } from './data';
-import { Meal, ScreenType, HydrationLog, UserProfile, WeeklyPlanData } from './types';
-import { Home, Utensils, Calendar, Activity, Sparkles, Bell, Clock, Volume2 } from 'lucide-react';
+import { Meal, ScreenType, HydrationLog, UserProfile, WeeklyPlanData, UserSettings } from './types';
+import { Home, Utensils, Calendar, Activity, Sparkles, Bell, Clock, Settings as SettingsIcon } from 'lucide-react';
 
 
 export default function App() {
