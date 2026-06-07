@@ -5,7 +5,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = 3001; // switched to avoid conflict
 
   app.use(express.json());
 
