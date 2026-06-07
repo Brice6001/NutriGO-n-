@@ -35,12 +35,12 @@ export default function App() {
   
   // App-level state management
   const [userProfile, setUserProfile] = useState<UserProfile>({
-    name: 'Alex',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1-fR8ikAgIEmEuBkBiZ6WUIQ0FJOt9V_RjQaoBT765y1XsSaG9hu_JMt-O0tuAxER2b8Omh71yW52ejzy8FWCPAMrKK_S_EDaFJwSc7sb0Os7sHx9LKqimd8_bqDRGIwjLx5_DcUXZQuS3aMi_y8MR77ax7SfaF2Om5RoT46yiE3NogTKy-Moku47QWZQGUYbHMN2zL2n1eZfYbbh3sDWUbzismmYPmqaSd0Ma-aYO11wxtXWFuT3SHkgMpND2yfn9O07KzVuzQ',
-    wellnessStreak: 12,
-    weightTrend: [75.4, 75.1, 74.8, 74.5, 74.6, 74.1, 73.8, 73.5, 73.0],
-    currentWeight: 73.0,
-    targetWeight: 70.0,
+    name: '',
+    avatar: '',
+    wellnessStreak: 0,
+    weightTrend: [],
+    currentWeight: 0,
+    targetWeight: 0,
   });
 
   const [hydration, setHydration] = useState<HydrationLog>({
@@ -176,13 +176,13 @@ export default function App() {
       setWeeklyPlan(DEFAULT_WEEK_PLAN);
       setHydration({ currentMl: 1300, goalMl: 2000 });
       setUserProfile({
-        name: 'Alex',
-        avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1-fR8ikAgIEmEuBkBiZ6WUIQ0FJOt9V_RjQaoBT765y1XsSaG9hu_JMt-O0tuAxER2b8Omh71yW52ejzy8FWCPAMrKK_S_EDaFJwSc7sb0Os7sHx9LKqimd8_bqDRGIwjLx5_DcUXZQuS3aMi_y8MR77ax7SfaF2Om5RoT46yiE3NogTKy-Moku47QWZQGUYbHMN2zL2n1eZfYbbh3sDWUbzismmYPmqaSd0Ma-aYO11wxtXWFuT3SHkgMpND2yfn9O07KzVuzQ',
-        wellnessStreak: 12,
-        weightTrend: [75.4, 75.1, 74.8, 74.5, 74.6, 74.1, 73.8, 73.5, 73.0],
-        currentWeight: 73.0,
-        targetWeight: 70.0,
-      });
+      name: '',
+      avatar: '',
+      wellnessStreak: 0,
+      weightTrend: [],
+      currentWeight: 0,
+      targetWeight: 0,
+    });
       setIsSubscribed(false);
     } catch (err) {
       console.error("Sign out failed:", err);
