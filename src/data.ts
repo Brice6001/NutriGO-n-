@@ -391,19 +391,19 @@ export const TESTIMONIALS: Testimonial[] = [
 // Seed initial default weekly plans matching the exact screenshot (Week of Oct 14 - Oct 20, 2024)
 export const DEFAULT_WEEK_PLAN: WeeklyPlanData = {
   'MON': {
-    breakfast: MEALS_CATALOG.find(m => m.id === 'berry_smoothie') || MEALS_CATALOG[9],
+    breakfast: MEALS_CATALOG.find(m => m.id === 'acai_bowl') || MEALS_CATALOG[9],
     lunch: MEALS_CATALOG.find(m => m.id === 'lemon_garlic_salmon') || MEALS_CATALOG[2],
     dinner: MEALS_CATALOG.find(m => m.id === 'mediterranean_power_bowl') || MEALS_CATALOG[3],
     caloriesPlanned: 1950
   },
   'TUE': {
-    breakfast: MEALS_CATALOG.find(m => m.id === 'avocado_toast') || MEALS_CATALOG[10],
+    breakfast: MEALS_CATALOG.find(m => m.id === 'protein_oats') || MEALS_CATALOG[10],
     lunch: MEALS_CATALOG.find(m => m.id === 'lemon_herb_chicken') || MEALS_CATALOG[8],
     dinner: MEALS_CATALOG.find(m => m.id === 'lentil_pasta') || MEALS_CATALOG[13],
     caloriesPlanned: 1820
   },
   'WED': {
-    breakfast: MEALS_CATALOG.find(m => m.id === 'greek_yogurt') || MEALS_CATALOG[11],
+    breakfast: MEALS_CATALOG.find(m => m.id === 'veggie_frittata') || MEALS_CATALOG[11],
     lunch: MEALS_CATALOG.find(m => m.id === 'tuna_wrap') || MEALS_CATALOG[14],
     dinner: MEALS_CATALOG.find(m => m.id === 'mediterranean_power_bowl') || MEALS_CATALOG[3], // Mediterranean Bowl Highlight!
     caloriesPlanned: 1740
