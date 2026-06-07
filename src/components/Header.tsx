@@ -1,4 +1,4 @@
-import { Bell, User, Search, Sparkles } from 'lucide-react';
+import { Bell, User, Search, Sparkles, Star } from 'lucide-react';
 import { ScreenType } from '../types';
 
 interface HeaderProps {
@@ -128,10 +128,11 @@ export default function Header({
             </button>
             <button
               id="btn-profile"
-              onClick={onOpenProfile}
-              className="p-2 text-brand-teal/80 hover:text-brand-green-primary hover:bg-brand-teal/5 rounded-full transition-all active:scale-95"
+              onClick={() => isSubscribed ? onNavigate('subscription') : onOpenProfile()}
+              className="relative p-2 text-brand-teal/80 hover:text-brand-green-primary hover:bg-brand-teal/5 rounded-full transition-all active:scale-95"
             >
               <User className="w-5 h-5" />
+              {isSubscribed && <Star className="absolute top-0 right-0 w-3 h-3 text-brand-green-primary" />}
             </button>
           </div>
 
