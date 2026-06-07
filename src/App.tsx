@@ -373,7 +373,7 @@ export default function App() {
     return () => clearInterval(intervalId);
   }, [mealAlertsEnabled, breakfastTime, lunchTime, dinnerTime, lastTriggeredTimeKey, weeklyPlan]);
 
-  import Subscription from './components/Subscription';
+  
   const activeRecommendedMeals = MEALS_CATALOG.slice(0, 3);
 
   return (
