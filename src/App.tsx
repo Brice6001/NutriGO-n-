@@ -32,7 +32,19 @@ export default function App() {
   const [lunchTime, setLunchTime] = useState<string>('12:30');
   const [dinnerTime, setDinnerTime] = useState<string>('18:30');
   const [lastTriggeredTimeKey, setLastTriggeredTimeKey] = useState<string>('');
-  const [toastNotification, setToastNotification] = useState<{ title: string; desc: string; slot: string } | null>(null);
+  const [timeOffset, setTimeOffset] = useState<number>(0);
+
+  // Fetch server time on mount
+  useEffect(() => {
+    fetch('/api/time')
+      .then(res => res.json())
+      .then(data => {
+        const serverDate = new Date(data.serverTime);
+        const offset = serverDate.getTime() - Date.now();
+        setTimeOffset(offset);
+      })
+      .catch(err => console.error('Failed to sync time', err));
+  }, []);
   
   // App-level state management
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -348,7 +360,7 @@ export default function App() {
     if (!mealAlertsEnabled) return;
 
     const checkScheduledMeals = () => {
-      const now = new Date();
+      const now = new Date(Date.now() + (timeOffset ?? 0));
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const currentTimeStr = `${hours}:${minutes}`;
@@ -685,7 +697,12 @@ export default function App() {
         onSubscribe={handleSubscribeToggle}
       />
 
-      {/* Outer Body Container */}
+      {/* API Route: Sync Server Time
+  app.get("/api/time", (req, res) => {
+    const serverTime = new Date().toISOString();
+    res.json({ serverTime });
+  });
+ */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-6 pt-24 pb-24 md:pb-12">
         
         {/* Render nested details if selectedMeal is loaded */}
