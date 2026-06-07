@@ -8,6 +8,7 @@ import MealDetail from './components/MealDetail';
 import WeeklyPlan from './components/WeeklyPlan';
 import Tracking from './components/Tracking';
 import ProCoach from './components/ProCoach';
+import Plans from './components/Plans';
 import Subscription from './components/Subscription';
 
 import { Session, User } from '@supabase/supabase-js';
@@ -760,6 +761,9 @@ export default function App() {
     onSubscribe={handleSubscribeToggle}
     onBack={() => setCurrentScreen('settings')}
   />
+)}
+{currentScreen === 'plans' && (
+  <Plans />
 )}
 </>
         )}

@@ -143,7 +143,7 @@ export default function Header({
           {/* Premium Subscription CTA badge */}
           <button
             id="btn-subscribe"
-            onClick={() => onNavigate('plan')}
+            onClick={() => onNavigate('plans')}
             className={`font-sans font-bold text-xs px-4 py-2 rounded-full transition-all active:scale-95 border cursor-pointer ${
               isSubscribed
                 ? 'bg-brand-green-secondary text-brand-teal border-transparent flex items-center gap-1 shadow-xs hover:bg-opacity-90'

@@ -272,6 +272,51 @@ export const MEALS_CATALOG: Meal[] = [
     description: 'Delicate Atlantic cod fillet baked to perfection with a light herbed breadcrumb topping, served alongside garlic steamed broccoli and roasted carrot strips.',
     highlightTags: ['WHITE FISH', 'LOW INFLAMMATION', 'VITAMIN D RICH']
   }
+    {
+      id: 'chia_pudding',
+      name: 'Chia Pudding Delight',
+      category: 'Breakfast',
+      dietTags: ['Vegan', 'Low Carb', 'Gluten Free'],
+      price: 7.5,
+      rating: 4.6,
+      reviewsCount: 85,
+      prepTime: 5,
+      calories: 250,
+      macros: { protein: 8, carbs: 20, fat: 8 },
+      image: 'https://example.com/chia_pudding.jpg',
+      description: 'Creamy chia seed pudding with almond milk, topped with fresh berries.',
+      highlightTags: ['Vegan', 'GLUTEN FREE', 'HIGH FIBER']
+    },
+    {
+      id: 'quinoa_salad',
+      name: 'Quinoa Power Salad',
+      category: 'Lunch',
+      dietTags: ['Vegan', 'High Protein', 'Gluten Free'],
+      price: 12.0,
+      rating: 4.7,
+      reviewsCount: 102,
+      prepTime: 15,
+      calories: 380,
+      macros: { protein: 14, carbs: 50, fat: 10 },
+      image: 'https://example.com/quinoa_salad.jpg',
+      description: 'Protein-packed quinoa with mixed veggies, chickpeas, and lemon vinaigrette.',
+      highlightTags: ['VEGAN FRIENDLY', 'HIGH PROTEIN']
+    },
+    {
+      id: 'herb_roasted_chicken',
+      name: 'Herb Roasted Chicken',
+      category: 'Dinner',
+      dietTags: ['High Protein', 'Paleo'],
+      price: 16.5,
+      rating: 4.8,
+      reviewsCount: 120,
+      prepTime: 40,
+      calories: 560,
+      macros: { protein: 45, carbs: 10, fat: 30 },
+      image: 'https://example.com/herb_roasted_chicken.jpg',
+      description: 'Juicy roasted chicken with rosemary, thyme, and roasted vegetables.',
+      highlightTags: ['HIGH PROTEIN', 'PALEO FRIENDLY']
+    },
 ];
 
 export const TESTIMONIALS: Testimonial[] = [
