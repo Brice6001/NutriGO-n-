@@ -271,7 +271,7 @@ export const MEALS_CATALOG: Meal[] = [
     image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&q=80&w=600',
     description: 'Delicate Atlantic cod fillet baked to perfection with a light herbed breadcrumb topping, served alongside garlic steamed broccoli and roasted carrot strips.',
     highlightTags: ['WHITE FISH', 'LOW INFLAMMATION', 'VITAMIN D RICH']
-  }
+  },
     {
       id: 'chia_pudding',
       name: 'Chia Pudding Delight',
