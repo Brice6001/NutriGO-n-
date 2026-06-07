@@ -4,7 +4,7 @@ import { Meal } from '../types';
 import { MEALS_CATALOG } from '../data';
 
 // Filter example meals for each category
-const breakfastMeals = MEALS_CATALOG.filter(m => m.category === 'Breakfast').slice(0, 3);
+const breakfastMeals = MEALS_CATALOG.filter(m => m.category === 'Breakfast').slice(0, 6);
 const lunchMeals = MEALS_CATALOG.filter(m => m.category === 'Lunch').slice(0, 3);
 const dinnerMeals = MEALS_CATALOG.filter(m => m.category === 'Dinner').slice(0, 3);
 
@@ -24,22 +24,22 @@ export default function Plans() {
           All plans include weekly personalized meals, AI nutrition assistance, and unlimited deliveries.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="border border-brand-green-primary rounded-xl p-4 hover:bg-brand-green-primary/10 transition">
-            <h3 className="font-bold text-brand-green-primary">Basic</h3>
+          <button className="border border-brand-green-primary rounded-xl p-4 hover:bg-gradient-to-r from-brand-green-primary to-brand-green-secondary hover:text-white transition duration-300">
+            <h3 className="font-bold text-brand-green-primary">Starter</h3>
             <p className="text-sm text-brand-teal/70">3 meals / day</p>
-            <p className="text-lg font-extrabold mt-2">$29 / mo</p>
+            <p className="text-lg font-extrabold mt-2">$19 / mo</p>
             <ArrowRight className="mt-2 w-5 h-5 text-brand-green-primary" />
           </button>
-          <button className="border border-brand-green-primary rounded-xl p-4 hover:bg-brand-green-primary/10 transition">
+          <button className="border border-brand-green-primary rounded-xl p-4 hover:bg-gradient-to-r from-brand-green-primary to-brand-green-secondary hover:text-white transition duration-300">
             <h3 className="font-bold text-brand-green-primary">Pro</h3>
             <p className="text-sm text-brand-teal/70">5 meals / day + AI coach</p>
             <p className="text-lg font-extrabold mt-2">$49 / mo</p>
             <ArrowRight className="mt-2 w-5 h-5 text-brand-green-primary" />
           </button>
-          <button className="border border-brand-green-primary rounded-xl p-4 hover:bg-brand-green-primary/10 transition">
-            <h3 className="font-bold text-brand-green-primary">Elite</h3>
+          <button className="border border-brand-green-primary rounded-xl p-4 hover:bg-gradient-to-r from-brand-green-primary to-brand-green-secondary hover:text-white transition duration-300">
+            <h3 className="font-bold text-brand-green-primary">Premium</h3>
             <p className="text-sm text-brand-teal/70">Full daily menu + premium support</p>
-            <p className="text-lg font-extrabold mt-2">$79 / mo</p>
+            <p className="text-lg font-extrabold mt-2">$99 / mo</p>
             <ArrowRight className="mt-2 w-5 h-5 text-brand-green-primary" />
           </button>
         </div>
